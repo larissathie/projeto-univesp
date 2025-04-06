@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar conta</title>
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+    
+        body, html {
+          height: 100%;
+          font-family: 'Arial', sans-serif;
+        }
+    
+        .container-esquerdo {
+          display: flex;
+          height: 100vh;
+          background: url('background.jpg') no-repeat center center/cover;
+        }
+    
+        .esquerdo {
+          flex: 1;
+          color: white;
+          padding: 80px 60px;
+          background-color: #022859;
+        }
+    
+        .esquerdo h1 {
+          font-size: 40px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+    
+        .esquerdo p {
+          margin: 30px 0;
+          color: #ddd;
+        }
+    
+        .direito {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #c1e4f2f5;
+          backdrop-filter: blur(8px);
+        }
+    
+        .formulario-cadastro {
+          background-color: #4679A6;
+          padding: 40px;
+          border-radius: 20px;
+          width: 80%;
+          max-width: 400px;
+          color: white;
+        }
+    
+        .formulario-cadastro h2 {
+          margin-bottom: 30px;
+          text-align: center;
+        }
+    
+        .formulario {
+          margin-bottom: 20px;
+        }
+    
+        .formulario label {
+          font-size: 12px;
+          display: block;
+          margin-bottom: 5px;
+          color: white;
+        }
+    
+        .formulario input,
+        .formulario select {
+          width: 100%;
+          padding: 12px;
+          border: none;
+          border-radius: 25px;
+          background-color: #022859b6;
+          color: white;
+        }
+    
+        .formulario input::placeholder {
+          color: #bbb;
+        }
+    
+        .formulario-cadastro button {
+          width: 100%;
+          padding: 12px;
+          border: none;
+          border-radius: 25px;
+          background-color: #0047ab;
+          color: white;
+          font-weight: bold;
+          cursor: pointer;
+        }
+    
+        .formulario-cadastro button:hover {
+          background-color: #003b8b;
+        }
+      </style>
+
+      <script>
+        function isValidCPF(cpf) {
+          cpf = cpf.replace(/[^\d]+/g, '');
+          if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+      
+          let sum = 0;
+          for (let i = 0; i < 9; i++) sum += parseInt(cpf.charAt(i)) * (10 - i);
+          let rest = (sum * 10) % 11;
+          if (rest === 10 || rest === 11) rest = 0;
+          if (rest !== parseInt(cpf.charAt(9))) return false;
+      
+          sum = 0;
+          for (let i = 0; i < 10; i++) sum += parseInt(cpf.charAt(i)) * (11 - i);
+          rest = (sum * 10) % 11;
+          if (rest === 10 || rest === 11) rest = 0;
+          return rest === parseInt(cpf.charAt(10));
+        }
+      
+        function isStrongPassword(password) {
+          // Pelo menos 8 caracteres, 1 letra maiúscula, 1 minúscula, 1 número e 1 símbolo
+          const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
+          return regex.test(password);
+        }
+      
+        document.querySelector("button").addEventListener("click", function (e) {
+          e.preventDefault();
+      
+          const cpf = document.getElementById("cpf").value;
+          const pass = document.getElementById("password").value;
+          const confirmPass = document.getElementById("confirm-password").value;
+      
+          let errors = [];
+      
+          if (!isValidCPF(cpf)) {
+            errors.push("CPF inválido.");
+          }
+      
+          if (!isStrongPassword(pass)) {
+            errors.push("A senha deve ter no mínimo 8 caracteres, com letra maiúscula, minúscula, número e símbolo.");
+          }
+      
+          if (pass !== confirmPass) {
+            errors.push("As senhas não coincidem.");
+          }
+      
+          // Remove mensagens anteriores
+          let feedback = document.getElementById("feedback");
+          if (feedback) feedback.remove();
+      
+          // Cria novo feedback
+          const message = document.createElement("div");
+          message.id = "feedback";
+          message.style.marginTop = "15px";
+          message.style.padding = "10px";
+          message.style.borderRadius = "8px";
+          message.style.background = errors.length ? "#ff4d4d" : "#4CAF50";
+          message.style.color = "#fff";
+      
+          if (errors.length) {
+            message.innerHTML = errors.join("<br>");
+          } else {
+            message.innerHTML = "Cadastro realizado com sucesso!";
+          }
+      
+          document.querySelector(".form-box").appendChild(message);
+        });
+
+          document.getElementById("cpf").addEventListener("input", function (e) {
+            let value = e.target.value.replace(/\D/g, ""); // remove tudo que não for número
+
+            if (value.length > 11) value = value.slice(0, 11); // limita a 11 dígitos
+
+            value = value.replace(/(\d{3})(\d)/, "$1.$2");
+            value = value.replace(/(\d{3})(\d)/, "$1.$2");
+            value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+            e.target.value = value;
+            });
+
+      </script>
+      
+    </head>
+<body>
+    <body>
+    
+        <div class="container-esquerdo">
+          <!-- Lado Esquerdo -->
+          <div class="esquerdo">
+            <h1>Criar nova conta</h1>
+            <p>Não possui uma conta? </p>
+            <p>É simples e fácil, preencha as informações ao lado para criar sua conta e ter acesso aos espaços do seu condomínio. </p>
+          </div>
+      
+          <!-- Lado Direito -->
+          <div class="direito">
+            <div class="formulario-cadastro">
+              <h2>Cadastro</h2>
+      
+              <div class="formulario">
+                <label for="name">Nome Completo</label>
+                <input type="text" id="name">
+              </div>
+      
+              <div class="formulario">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="exemplo@gmail.com">
+              </div>
+              <div class="formulario">
+                <label for="cpf">CPF</label>
+                <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14">
+              </div>
+              <div class="formulario">
+                <label for="password">Senha</label>
+                <input type="password" id="password" placeholder="Criar senha">
+              </div>
+              <div class="formulario">
+                <label for="confirm-password">Confirmar Senha</label>
+                <input type="password" id="confirm-password" placeholder="Confirmar senha">
+              </div>
+              <button>Criar cadastro</button>
+            </div>
+          </div>
+        </div>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ajuda</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .formulario-esquerdo {
+      background-color: #b2e0f8;
+      flex: 1;
+      padding: 60px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .formulario-esquerdo h2 {
+      font-size: 32px;
+      margin-bottom: 30px;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .campo-formulario {
+      margin-bottom: 20px;
+    }
+
+    .campo-formulario input,
+    .campo-formulario textarea {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .campo-formulario textarea {
+      resize: none;
+      height: 100px;
+    }
+
+    .submit-btn {
+      background-color: #f93ca5;
+      color: #fff;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    .submit-btn:hover {
+      background-color: #e33294;
+    }
+
+    .imagem-direita {
+      flex: 1;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .imagem-direita img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .left-panel, .right-panel {
+        padding: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="formulario-esquerdo">
+      <h2>Entre em contato conosco</h2>
+      <form>
+        <div class="campo-formulario">
+          <input type="text" placeholder="Nome" required />
+        </div>
+        <div class="campo-formulario">
+          <input type="email" placeholder="E-mail" required />
+        </div>
+        <div class="campo-formulario">
+            <input type="tel" placeholder="Número do telefone" required />
+          </div>          
+        <div class="campo-formulario">
+          <textarea placeholder="Menssagem" required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Enviar</button>
+      </form>
+    </div>
+    <div class="imagem-direita">
+      <img src="#" alt="Imagem de uma pessoa realizando suporte" />
+    </div>
+  </div>
+</body>
+</html>
