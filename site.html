@@ -16,6 +16,29 @@
       background: linear-gradient(to top, #e0f2fe, #dbeafe);
     }
 
+    header {
+      position: relative;
+      height: 100px;
+      padding-left: 40px;
+      display: flex;
+      align-items: center;
+    }
+
+    header > h1 {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #333333ce;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    header > img {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: auto;
+    }
+
     .login-usuario {
       flex: 1;
       display: flex;
@@ -88,15 +111,29 @@
       text-decoration: underline;
     }
 
-    .imagem {
-      width: 100%;
-      height: 10%;
-      object-fit: contain;
+    .container-imagem {
+      width: 100%;         /* ocupa toda a largura da tela */
+      height: 200px;       /* você pode ajustar essa altura como quiser */
+      overflow: hidden;    /* esconde partes da imagem que ultrapassarem */
+      display: flex;
+      justify-content: center; /* centraliza horizontalmente */
+      align-items: center;     /* centraliza verticalmente */
     }
+
+    .imagem {
+      height: 100%;
+      width: auto;
+      object-fit: cover; /* ou 'contain' se quiser a imagem inteira visível */
+    }
+
   </style>
 
 </head>
 <body>
+  <header>
+    <h1>Sistema Cadastral para Condomínios</h1>
+    <img src="imagens/logo.png" alt="Logo da página">
+  </header>
 
   <div class="login-usuario">
     <div class="login-geral">
@@ -119,7 +156,9 @@
     </div>
   </div>
 
-  <img src="#" alt="Prédio moderno" class="imagem">
+  <div class="container-imagem">
+    <img src="imagens/predios.png" alt="Prédio moderno" class="imagem">
+  </div>
 
 </body>
 </html>
