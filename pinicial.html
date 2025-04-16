@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+        background-color: #72bdffc0;
+        color: white;
+      }
+  
+      .container {
+        padding: 50px;
+        text-align: center;
+      }
+  
+      h1 {
+        font-size: 2em;
+        margin-bottom: 40px;
+      }
+  
+      .espacos {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+  
+      .espacos-img {
+        display: flex;
+        justify-content: center;   /* Centraliza horizontalmente */
+        align-items: center; 
+        background-color: #0873ff9f;
+        padding: 20px;
+        border-radius: 20px;
+        flex-wrap: wrap;           /* Se for responsivo */
+        cursor: pointer;
+        transition: transform 0.3s ease;
+
+      }
+  
+      .espacos-img:hover {
+        transform: scale(1.05);
+      }
+  
+      .espacos-img img {
+        width: 150px;
+        height: 150px;
+        border-radius: 15px;
+      }
+  
+      .calendario-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        z-index: 999;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      }
+  
+      .calendario-popup.active {
+        display: block;
+      }
+  
+      .calendario-popup button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #08004b;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+  
+    <div class="container">
+      <h1>Selecione o espaço abaixo</h1>
+      <div class="espacos">
+        <div class="espacos-img" onclick="abrirCalendario(0)">
+          <img src="imagens/churrasqueira.jpeg" alt="Imagem da churrasqueira">
+        </div>
+        <div class="espacos-img" onclick="abrirCalendario(1)">
+          <img src="imagens/quadra.jpeg" alt="Imagem da quadra">
+        </div>
+        <div class="espacos-img" onclick="abrirCalendario(2)">
+          <img src="imagens/salao-de-festas.jpeg" alt="Imagem do salão de festas">
+        </div>
+      </div>
+    </div>
+  
+    <div class="calendario-popup" id="popupCalendario">
+      <input type="text" id="calendario" placeholder="Selecione uma data">
+      <br>
+      <button onclick="fecharCalendario()">Próximo</button> <!-- alterar para levar para uma página nova onde será necessário confirmar o dia e hora selecionado e adicionar o CPF dos convidados -->
+    </div>
+  
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+      const calendario = flatpickr("#calendario", {
+        enableTime: true,
+        dateFormat: "d/m/Y H:i",
+        minDate: "today",
+        locale: "pt"
+        });
+  
+      function abrirCalendario(index) {
+        document.getElementById("popupCalendario").classList.add("active");
+      }
+  
+      function fecharCalendario() {
+        document.getElementById("popupCalendario").classList.remove("active");
+      }
+    </script>
+  </body>
+  </html>
