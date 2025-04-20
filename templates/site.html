@@ -122,22 +122,24 @@
 
   <div class="login-usuario">
     <div class="login-geral">
-      <div class="input-geral">
-        <i class="fas fa-user"></i>
-        <input type="text" placeholder="Usuário" required>
-      </div>
-
-      <div class="input-geral">
-        <i class="fas fa-lock"></i>
-        <input type="password" placeholder="Senha" required>
-      </div>
-
-      <button class="botao-entrar">Entrar</button>
-
-      <div class="links">
-        <a href="criar_conta.html">Criar conta</a>
-        <a href="ajuda.html">Ajuda!</a>
-      </div>
+      <form method="POST" action="/login" class="login-geral">
+        <div class="input-geral">
+          <i class="fas fa-user"></i>
+          <input type="text" name="usuario" placeholder="Usuário" required>
+        </div>
+      
+        <div class="input-geral">
+          <i class="fas fa-lock"></i>
+          <input type="password" name="senha" placeholder="Senha" required>
+        </div>
+      
+        <button type="submit" class="botao-entrar">Entrar</button>
+      
+        <div class="links">
+          <a href="criar_conta.html">Criar conta</a>
+          <a href="ajuda.html">Ajuda!</a>
+        </div>
+      </form>
     </div>
   </div>
 
