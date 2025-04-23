@@ -3,6 +3,18 @@ import os, datetime
 import sqlite3
 from flask_sqlalchemy import SQLAlchemy
 
+# from flask_mail import Mail, Message
+
+#app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+#app.config['MAIL_PORT'] = 587
+#app.config['MAIL_USE_TLS'] = True
+#app.config['MAIL_USERNAME'] = '#'  # Coloque aqui o e-mail da central
+#app.config['MAIL_PASSWORD'] = '#'  # Use App Password se for Gmail
+#app.config['MAIL_DEFAULT_SENDER'] = 'seuemail@gmail.com'
+
+#mail = Mail(app)
+
+
 project_dir = os.path.dirname(os.path.abspath(__file__))
 database_file = "sqlite:///{}".format(os.path.join(project_dir,"database.db"))
 
@@ -28,9 +40,23 @@ def index():
 def criarconta():
     return render_template('criar_conta.html')
 
-@app.route('/ajuda.html')
+''' @app.route('/ajuda', methods=['GET', 'POST'])
 def ajuda():
-    return render_template('ajuda.html')
+    if request.method == 'POST':
+        nome = request.form['nome']
+        email = request.form['email']
+        mensagem = request.form['mensagem']
+
+        msg = Message(subject='Nova mensagem do sistema de ajuda',
+                      recipients=['#'],  # E-mail de destino
+                      body=f'Nome: {nome}\nEmail: {email}\n\nMensagem:\n{mensagem}')
+        mail.send(msg)
+
+        flash('Mensagem enviada com sucesso!', 'success')
+        return redirect(url_for('ajuda'))
+
+    return render_template('ajuda.html') '''
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -50,3 +76,7 @@ def login():
 @app.route('/pinicial')
 def pagina_inicial():
     return render_template('pinicial.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+

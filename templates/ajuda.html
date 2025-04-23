@@ -96,10 +96,20 @@
   </style>
 </head>
 <body>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+
   <div class="container">
     <div class="formulario-esquerdo">
       <h2>Entre em contato conosco</h2>
-      <form>
+      <form method="POST" action="/ajuda">
         <div class="campo-formulario">
           <input type="text" placeholder="Nome" required />
         </div>
@@ -116,8 +126,10 @@
       </form>
     </div>
     <div class="imagem-direita">
-      <img src="imagens/suporte.png" alt="Duas pessoas realizando suporte vistual">
+      <img src="{{ url_for('static', filename='imagens/suporte.png') }}" alt="Duas pessoas realizando suporte vistual">
     </div>
   </div>
 </body>
+
+
 </html>
