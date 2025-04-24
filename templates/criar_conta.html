@@ -24,9 +24,9 @@
     
         .esquerdo {
           flex: 1;
-          color: white;
+          color: black;
           padding: 80px 60px;
-          background-color: #022859;
+          background-color: white;
         }
     
         .esquerdo h1 {
@@ -38,7 +38,7 @@
     
         .esquerdo p {
           margin: 30px 0;
-          color: #ddd;
+          color: black;
         }
 
         .imagem-cadastro{
@@ -113,87 +113,6 @@
           background-color: #003b8b;
         }
       </style>
-
-      <script>
-        function isValidCPF(cpf) {
-          cpf = cpf.replace(/[^\d]+/g, '');
-          if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
-      
-          let sum = 0;
-          for (let i = 0; i < 9; i++) sum += parseInt(cpf.charAt(i)) * (10 - i);
-          let rest = (sum * 10) % 11;
-          if (rest === 10 || rest === 11) rest = 0;
-          if (rest !== parseInt(cpf.charAt(9))) return false;
-      
-          sum = 0;
-          for (let i = 0; i < 10; i++) sum += parseInt(cpf.charAt(i)) * (11 - i);
-          rest = (sum * 10) % 11;
-          if (rest === 10 || rest === 11) rest = 0;
-          return rest === parseInt(cpf.charAt(10));
-        }
-      
-        function isStrongPassword(password) {
-          // Pelo menos 8 caracteres, 1 letra maiúscula, 1 minúscula, 1 número e 1 símbolo
-          const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
-          return regex.test(password);
-        }
-      
-        document.querySelector("button").addEventListener("click", function (e) {
-          e.preventDefault();
-      
-          const cpf = document.getElementById("cpf").value;
-          const pass = document.getElementById("password").value;
-          const confirmPass = document.getElementById("confirm-password").value;
-      
-          let errors = [];
-      
-          if (!isValidCPF(cpf)) {
-            errors.push("CPF inválido.");
-          }
-      
-          if (!isStrongPassword(pass)) {
-            errors.push("A senha deve ter no mínimo 8 caracteres, com letra maiúscula, minúscula, número e símbolo.");
-          }
-      
-          if (pass !== confirmPass) {
-            errors.push("As senhas não coincidem.");
-          }
-      
-          // Remove mensagens anteriores
-          let feedback = document.getElementById("feedback");
-          if (feedback) feedback.remove();
-      
-          // Cria novo feedback
-          const message = document.createElement("div");
-          message.id = "feedback";
-          message.style.marginTop = "15px";
-          message.style.padding = "10px";
-          message.style.borderRadius = "8px";
-          message.style.background = errors.length ? "#ff4d4d" : "#4CAF50";
-          message.style.color = "#fff";
-      
-          if (errors.length) {
-            message.innerHTML = errors.join("<br>");
-          } else {
-            message.innerHTML = "Cadastro realizado com sucesso!";
-          }
-      
-          document.querySelector(".form-box").appendChild(message);
-        });
-
-          document.getElementById("cpf").addEventListener("input", function (e) {
-            let value = e.target.value.replace(/\D/g, ""); // remove tudo que não for número
-
-            if (value.length > 11) value = value.slice(0, 11); // limita a 11 dígitos
-
-            value = value.replace(/(\d{3})(\d)/, "$1.$2");
-            value = value.replace(/(\d{3})(\d)/, "$1.$2");
-            value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-
-            e.target.value = value;
-            });
-
-      </script>
       
     </head>
 <body>
@@ -247,5 +166,87 @@
             </div>
           </div>
         </div>
+
+        <script>
+          function isValidCPF(cpf) {
+            cpf = cpf.replace(/[^\d]+/g, '');
+            if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+        
+            let sum = 0;
+            for (let i = 0; i < 9; i++) sum += parseInt(cpf.charAt(i)) * (10 - i);
+            let rest = (sum * 10) % 11;
+            if (rest === 10 || rest === 11) rest = 0;
+            if (rest !== parseInt(cpf.charAt(9))) return false;
+        
+            sum = 0;
+            for (let i = 0; i < 10; i++) sum += parseInt(cpf.charAt(i)) * (11 - i);
+            rest = (sum * 10) % 11;
+            if (rest === 10 || rest === 11) rest = 0;
+            return rest === parseInt(cpf.charAt(10));
+          }
+        
+          function isStrongPassword(password) {
+            // Pelo menos 8 caracteres, 1 letra maiúscula, 1 minúscula, 1 número e 1 símbolo
+            const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
+            return regex.test(password);
+          }
+        
+          document.querySelector("button").addEventListener("click", function (e) {
+            e.preventDefault();
+        
+            const cpf = document.getElementById("cpf").value;
+            const pass = document.getElementById("password").value;
+            const confirmPass = document.getElementById("confirm-password").value;
+        
+            let errors = [];
+        
+            if (!isValidCPF(cpf)) {
+              errors.push("CPF inválido.");
+            }
+        
+            if (!isStrongPassword(pass)) {
+              errors.push("A senha deve ter no mínimo 8 caracteres, com letra maiúscula, minúscula, número e símbolo.");
+            }
+        
+            if (pass !== confirmPass) {
+              errors.push("As senhas não coincidem.");
+            }
+        
+            // Remove mensagens anteriores
+            let feedback = document.getElementById("feedback");
+            if (feedback) feedback.remove();
+        
+            // Cria novo feedback
+            const message = document.createElement("div");
+            message.id = "feedback";
+            message.style.marginTop = "15px";
+            message.style.padding = "10px";
+            message.style.borderRadius = "8px";
+            message.style.background = errors.length ? "#ff4d4d" : "#4CAF50";
+            message.style.color = "#fff";
+        
+            if (errors.length) {
+              message.innerHTML = errors.join("<br>");
+            } else {
+              message.innerHTML = "Cadastro realizado com sucesso!";
+            }
+        
+            document.querySelector(".form-box").appendChild(message);
+          });
+  
+            document.getElementById("cpf").addEventListener("input", function (e) {
+              let value = e.target.value.replace(/\D/g, ""); // remove tudo que não for número
+  
+              if (value.length > 11) value = value.slice(0, 11); // limita a 11 dígitos
+  
+              value = value.replace(/(\d{3})(\d)/, "$1.$2");
+              value = value.replace(/(\d{3})(\d)/, "$1.$2");
+              value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  
+              e.target.value = value;
+              });
+  
+        </script>
+        
 </body>
 </html>

@@ -2,27 +2,43 @@ from flask import Flask, render_template, request,url_for,flash,redirect
 import os, datetime
 import sqlite3
 from flask_sqlalchemy import SQLAlchemy
-
-# from flask_mail import Mail, Message
-
-#app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-#app.config['MAIL_PORT'] = 587
-#app.config['MAIL_USE_TLS'] = True
-#app.config['MAIL_USERNAME'] = '#'  # Coloque aqui o e-mail da central
-#app.config['MAIL_PASSWORD'] = '#'  # Use App Password se for Gmail
-#app.config['MAIL_DEFAULT_SENDER'] = 'seuemail@gmail.com'
-
-#mail = Mail(app)
-
+from flask_mail import Mail, Message
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
 database_file = "sqlite:///{}".format(os.path.join(project_dir,"database.db"))
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your secret key'
 app.config['SQLALCHEMY_DATABASE_URI'] = database_file
 db = SQLAlchemy(app)
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'grupopiunivespsala6grupo7@gmail.com'  # Coloque aqui o e-mail da central
+app.config['MAIL_PASSWORD'] = 'xxhchiyjtzalvbgs'  # Use App Password se for Gmail
+app.config['MAIL_DEFAULT_SENDER'] = 'grupopiunivespsala6grupo7@gmail.com'
+
+mail = Mail(app)
+
+
+@app.route('/ajuda', methods=['GET', 'POST'])
+def ajuda():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        email = request.form['email']
+        telefone = request.form['telefone']
+        mensagem = request.form['mensagem']
+
+        msg = Message(subject='Nova mensagem do sistema de ajuda',
+                      recipients=['grupopiunivespsala6grupo7@gmail.com'],  # E-mail de destino
+                      body=f'Nome: {nome}\nEmail: {email}\nTelefone: {telefone}\n\nMensagem:\n{mensagem}')
+        mail.send(msg)
+
+        flash('Mensagem enviada com sucesso!', 'success')
+        return redirect(url_for('ajuda'))
+
+    return render_template('ajuda.html') 
 
 class Usuario(db.Model):    
     __tablename__ = 'usuarios'
@@ -40,23 +56,7 @@ def index():
 def criarconta():
     return render_template('criar_conta.html')
 
-''' @app.route('/ajuda', methods=['GET', 'POST'])
-def ajuda():
-    if request.method == 'POST':
-        nome = request.form['nome']
-        email = request.form['email']
-        mensagem = request.form['mensagem']
-
-        msg = Message(subject='Nova mensagem do sistema de ajuda',
-                      recipients=['#'],  # E-mail de destino
-                      body=f'Nome: {nome}\nEmail: {email}\n\nMensagem:\n{mensagem}')
-        mail.send(msg)
-
-        flash('Mensagem enviada com sucesso!', 'success')
-        return redirect(url_for('ajuda'))
-
-    return render_template('ajuda.html') '''
-
+ 
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -79,4 +79,3 @@ def pagina_inicial():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

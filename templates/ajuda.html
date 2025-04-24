@@ -111,16 +111,16 @@
       <h2>Entre em contato conosco</h2>
       <form method="POST" action="/ajuda">
         <div class="campo-formulario">
-          <input type="text" placeholder="Nome" required />
+          <input type="text" name="nome" placeholder="Nome" required />
         </div>
         <div class="campo-formulario">
-          <input type="email" placeholder="E-mail" required />
+          <input type="email" name="email" placeholder="E-mail" required />
         </div>
         <div class="campo-formulario">
-            <input type="tel" placeholder="Número do telefone" required />
+            <input type="tel" name="telefone" placeholder="Número do telefone" required />
           </div>          
         <div class="campo-formulario">
-          <textarea placeholder="Mensagem" required></textarea>
+          <textarea name="mensagem" placeholder="Mensagem" required></textarea>
         </div>
         <button type="submit" class="submit-btn">Enviar</button>
       </form>
