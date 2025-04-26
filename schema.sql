@@ -1,9 +1,26 @@
 DROP TABLE IF EXISTS usuarios;
+DROP TABLE IF EXISTS agendamentos;
+DROP TABLE IF EXISTS moradores;
 
 CREATE TABLE usuarios (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome text not null,
-    email text not null,
-    cpf text not null,
-    senha text not null
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    senha VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    apartamento VARCHAR(10) NOT NULL
+);
+
+CREATE TABLE agendamentos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    data date NOT NULL,
+    local int NOT NULL,        
+    apartamento VARCHAR(10) NOT NULL
+);
+
+CREATE TABLE moradores (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    apartamento VARCHAR(10) NOT NULL
 );
