@@ -15,8 +15,8 @@ db = SQLAlchemy(app)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'grupopiunivespsala6grupo7@gmail.com'  # Coloque aqui o e-mail da central
-app.config['MAIL_PASSWORD'] = 'xxhchiyjtzalvbgs'  # Use App Password se for Gmail
+app.config['MAIL_USERNAME'] = 'grupopiunivespsala6grupo7@gmail.com'  
+app.config['MAIL_PASSWORD'] = 'xxhchiyjtzalvbgs'  
 app.config['MAIL_DEFAULT_SENDER'] = 'grupopiunivespsala6grupo7@gmail.com'
 
 mail = Mail(app)
@@ -76,6 +76,18 @@ def login():
 @app.route('/pinicial')
 def pagina_inicial():
     return render_template('pinicial.html')
+
+@app.route('/perfil_usuario')
+def perfil_usuario():
+    return render_template('perfil-usuario.html')
+
+@app.route('/cadastrar_familiares')
+def cadastrar_familiares():
+    return render_template('cadastrar_familiares.html')
+
+@app.route('/cadastrar_convidados')
+def cadastrar_convidados():
+    return render_template('cadastrar_convidados.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
