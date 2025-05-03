@@ -3,6 +3,7 @@ import os, datetime
 import sqlite3
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
+from flask import session
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
 database_file = "sqlite:///{}".format(os.path.join(project_dir,"database.db"))
@@ -48,6 +49,17 @@ class Usuario(db.Model):
     cpf = db.Column(db.String(40), nullable = False)
     senha = db.Column(db.String(40), nullable = False)
 
+class Familiar(db.Model):
+    __tablename__ = 'moradores'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    cpf = db.Column(db.String(14), unique=True, nullable=False)
+    apartamento = db.Column(db.String(10), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+
+    usuario = db.relationship('Usuario', backref=db.backref('familiares', lazy=True))
+
 @app.route('/')
 def index():
     return render_template('site.html')
@@ -69,21 +81,63 @@ def login():
     user = Usuario.query.filter_by(nome=usuario, senha=senha).first()
     
     if user:
+        session['usuario_nome'] = user.nome  
         return redirect(url_for('pagina_inicial')) 
     else:
         return render_template('site.html', error="Usuário ou senha incorretos!")
 
 @app.route('/pinicial')
 def pagina_inicial():
-    return render_template('pinicial.html')
+    nome_usuario = session.get('usuario_nome')
+    return render_template('pinicial.html', nome=nome_usuario)
 
 @app.route('/perfil_usuario')
 def perfil_usuario():
     return render_template('perfil-usuario.html')
 
-@app.route('/cadastrar_familiares')
+@app.route('/cadastrar_familiares', methods=['GET', 'POST'])
 def cadastrar_familiares():
-    return render_template('cadastrar_familiares.html')
+    if 'usuario_id' not in session:
+        return redirect(url_for('index'))
+
+    usuario_id = session['usuario_id']
+    familiares = Familiar.query.filter_by(usuario_id=usuario_id).all()
+
+    familiar_editado = None
+    if request.method == 'POST':
+        nome = request.form['nome']
+        familiar_id = request.form.get('familiar_id')
+
+        if familiar_id:
+            familiar_editado = Familiar.query.get(familiar_id)
+            if familiar_editado and familiar_editado.usuario_id == usuario_id:
+                familiar_editado.nome = nome
+                db.session.commit()
+        else:
+            novo_familiar = Familiar(nome=nome, usuario_id=usuario_id)
+            db.session.add(novo_familiar)
+            db.session.commit()
+
+        return redirect(url_for('cadastrar_familiares'))
+
+    edit_id = request.args.get('edit')
+    if edit_id:
+        familiar_editado = Familiar.query.get(edit_id)
+        if familiar_editado and familiar_editado.usuario_id != usuario_id:
+            familiar_editado = None
+
+    return render_template('cadastrar_familiares.html', familiares=familiares, familiar_editado=familiar_editado)
+
+@app.route('/excluir_familiar/<int:id>', methods=['POST'])
+def excluir_familiar(id):
+    familiar = Familiar.query.get_or_404(id)
+    if familiar.usuario_id != session.get('usuario_id'):
+        return redirect(url_for('cadastrar_familiares'))
+
+    db.session.delete(familiar)
+    db.session.commit()
+    return redirect(url_for('cadastrar_familiares'))
+
 
 @app.route('/cadastrar_convidados')
 def cadastrar_convidados():
