@@ -50,23 +50,22 @@ class Usuario(db.Model):
     senha = db.Column(db.String(100), nullable=False)
 
 class Familiar(db.Model):
-    __tablename__ = 'moradores'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(100), nullable=False)
-    cpf = db.Column(db.String(14), unique=True, nullable=False)
-    apartamento = db.Column(db.String(10), nullable=False)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-
-    usuario = db.relationship('Usuario', backref=db.backref('familiares', lazy=True))
-
-class VisitanteApartamento(db.Model):
     __tablename__ = 'visitantes_apartamento'
     cpf_visitante = db.Column(db.Integer, primary_key=True)
     cpf_morador = db.Column(db.Integer, db.ForeignKey('moradores.cpf'), nullable=False)
-    nome = db.Column(db.String(50))
-    apartamento = db.Column(db.String(10))
+    nome = db.Column(db.String(50), nullable=False)
+    apartamento = db.Column(db.String(10), nullable=False)
 
+    morador = db.relationship('Usuario', backref=db.backref('familiares', lazy=True))
+
+class ConvidadoEvento(db.Model):
+    __tablename__ = 'visitantes_eventos'
+    cpf_visitante = db.Column(db.Integer, primary_key=True)
+    cpf_morador = db.Column(db.Integer, db.ForeignKey('moradores.cpf'), nullable=False)
+    nome = db.Column(db.String(50), nullable=False)
+    apartamento = db.Column(db.String(10), nullable=False)
+
+    morador = db.relationship('Usuario', backref=db.backref('convidados_eventos', lazy=True))
 
 @app.route('/')
 def index():
@@ -105,51 +104,91 @@ def perfil_usuario():
 
 @app.route('/cadastrar_familiares', methods=['GET', 'POST'])
 def cadastrar_familiares():
-    if 'usuario_id' not in session:
+    if 'usuario_cpf' not in session:
         return redirect(url_for('index'))
 
-    usuario_id = session['usuario_id']
-    familiares = Familiar.query.filter_by(usuario_id=usuario_id).all()
+    usuario_id = session['usuario_cpf']
+    familiares = Familiar.query.filter_by(cpf_morador=cpf_morador).all()
 
     familiar_editado = None
     if request.method == 'POST':
         nome = request.form['nome']
-        familiar_id = request.form.get('familiar_id')
+        cpf_visitante = request.form.get('cpf_visitante')
+        apartamento = request.form.get('apartamento')
 
-        if familiar_id:
-            familiar_editado = Familiar.query.get(familiar_id)
-            if familiar_editado and familiar_editado.usuario_id == usuario_id:
+        if cpf_visitante:
+            familiar_editado = Familiar.query.get(cpf_visitante)
+            if familiar_editado and familiar_editado.cpf_morador == cpf_morador:
                 familiar_editado.nome = nome
+                familiar_editado.apartamento = apartamento
                 db.session.commit()
         else:
-            novo_familiar = Familiar(nome=nome, usuario_id=usuario_id)
+            novo_familiar = Familiar(
+                nome=nome,
+                apartamento=apartamento,
+                cpf_morador=cpf_morador,
+                cpf_visitante=datetime.datetime.now().timestamp()  # Simula ID único
+            )
             db.session.add(novo_familiar)
             db.session.commit()
 
         return redirect(url_for('cadastrar_familiares'))
 
-    edit_id = request.args.get('edit')
-    if edit_id:
-        familiar_editado = Familiar.query.get(edit_id)
-        if familiar_editado and familiar_editado.usuario_id != usuario_id:
-            familiar_editado = None
-
     return render_template('cadastrar_familiares.html', familiares=familiares, familiar_editado=familiar_editado)
 
-@app.route('/excluir_familiar/<int:id>', methods=['POST'])
-def excluir_familiar(id):
-    familiar = Familiar.query.get_or_404(id)
-    if familiar.usuario_id != session.get('usuario_id'):
+@app.route('/excluir_familiar/<int:cpf_visitante>', methods=['POST'])
+def excluir_familiar(cpf_visitante):
+    familiar = Familiar.query.get_or_404(cpf_visitante)
+    if familiar.cpf_morador != session.get('usuario_cpf'):
         return redirect(url_for('cadastrar_familiares'))
 
     db.session.delete(familiar)
     db.session.commit()
     return redirect(url_for('cadastrar_familiares'))
 
-
-@app.route('/cadastrar_convidados')
+@app.route('/cadastrar_convidados', methods=['GET', 'POST'])
 def cadastrar_convidados():
-    return render_template('cadastrar_convidados.html')
+    if 'usuario_cpf' not in session:
+        return redirect(url_for('index'))
+
+    cpf_morador = session['usuario_cpf']
+    convidados = ConvidadoEvento.query.filter_by(cpf_morador=cpf_morador).all()
+
+    convidado_editado = None
+    if request.method == 'POST':
+        nome = request.form['nome']
+        cpf_visitante = request.form.get('cpf_visitante')
+        apartamento = request.form.get('apartamento')
+
+        if cpf_visitante:
+            convidado_editado = ConvidadoEvento.query.get(cpf_visitante)
+            if convidado_editado and convidado_editado.cpf_morador == cpf_morador:
+                convidado_editado.nome = nome
+                convidado_editado.apartamento = apartamento
+                db.session.commit()
+        else:
+            novo_convidado = ConvidadoEvento(
+                nome=nome,
+                apartamento=apartamento,
+                cpf_morador=cpf_morador,
+                cpf_visitante=datetime.datetime.now().timestamp()  # Simula ID único
+            )
+            db.session.add(novo_convidado)
+            db.session.commit()
+
+        return redirect(url_for('cadastrar_convidados'))
+
+    return render_template('cadastrar_convidados.html', convidados=convidados, convidado_editado=convidado_editado)
+
+@app.route('/excluir_convidado/<int:cpf_visitante>', methods=['POST'])
+def excluir_convidado(cpf_visitante):
+    convidado = ConvidadoEvento.query.get_or_404(cpf_visitante)
+    if convidado.cpf_morador != session.get('usuario_cpf'):
+        return redirect(url_for('cadastrar_convidados'))
+
+    db.session.delete(convidado)
+    db.session.commit()
+    return redirect(url_for('cadastrar_convidados'))
 
 if __name__ == '__main__':
     app.run(debug=True)
