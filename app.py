@@ -41,13 +41,13 @@ def ajuda():
 
     return render_template('ajuda.html') 
 
-class Usuario(db.Model):    
-    __tablename__ = 'usuarios'
-    id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(40), nullable = False)
-    email = db.Column(db.String(40), nullable = False)
-    cpf = db.Column(db.String(40), nullable = False)
-    senha = db.Column(db.String(40), nullable = False)
+class Usuario(db.Model):
+    __tablename__ = 'moradores'
+    cpf = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(50), nullable=False)
+    apartamento = db.Column(db.String(10), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    senha = db.Column(db.String(100), nullable=False)
 
 class Familiar(db.Model):
     __tablename__ = 'moradores'
@@ -59,6 +59,14 @@ class Familiar(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
 
     usuario = db.relationship('Usuario', backref=db.backref('familiares', lazy=True))
+
+class VisitanteApartamento(db.Model):
+    __tablename__ = 'visitantes_apartamento'
+    cpf_visitante = db.Column(db.Integer, primary_key=True)
+    cpf_morador = db.Column(db.Integer, db.ForeignKey('moradores.cpf'), nullable=False)
+    nome = db.Column(db.String(50))
+    apartamento = db.Column(db.String(10))
+
 
 @app.route('/')
 def index():
@@ -78,10 +86,10 @@ def login():
     if not usuario or not senha:
         return render_template('site.html', error="Por favor, preencha usuário e senha!")
 
-    user = Usuario.query.filter_by(nome=usuario, senha=senha).first()
+    user = Usuario.query.filter_by(email=usuario, senha=senha).first()
     
     if user:
-        session['usuario_nome'] = user.nome  
+        session['usuario_cpf'] = user.cpf
         return redirect(url_for('pagina_inicial')) 
     else:
         return render_template('site.html', error="Usuário ou senha incorretos!")
