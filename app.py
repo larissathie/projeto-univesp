@@ -75,8 +75,6 @@ def index():
 def criarconta():
     return render_template('criar_conta.html')
 
- 
-
 @app.route('/login', methods=['POST'])
 def login():
     usuario = request.form['usuario']
@@ -89,6 +87,7 @@ def login():
     
     if user:
         session['usuario_cpf'] = user.cpf
+        session['usuario_nome'] = user.nome #apresenta o nome do usuário no lado direito da tela
         return redirect(url_for('pagina_inicial')) 
     else:
         return render_template('site.html', error="Usuário ou senha incorretos!")
