@@ -107,7 +107,7 @@ def cadastrar_familiares():
     if 'usuario_cpf' not in session:
         return redirect(url_for('index'))
 
-    usuario_id = session['usuario_cpf']
+    cpf_morador = session['usuario_cpf']
     familiares = Familiar.query.filter_by(cpf_morador=cpf_morador).all()
 
     familiar_editado = None

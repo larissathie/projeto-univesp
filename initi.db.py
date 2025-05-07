@@ -6,14 +6,14 @@ with open('schema.sql') as f:
     connection.executescript(f.read())
 
 cur = connection.cursor()
-## tentativa de inclusão de valores testes
-cur.execute("INSERT INTO usuarios (nome, email, cpf , senha) VALUES (?,?,?,?)",
-            ('Gabriel', 'emailGabriel@email.com' , '265.568.987-41' , '1111')
-            )
 
-cur.execute("INSERT INTO usuarios (nome, email, cpf , senha) VALUES (?,?,?,?)",
-            ('Fabiana', 'emailFabiana@email.com' , '288.354.458-81' , '2222')
-            )
+
+cur.execute("INSERT INTO moradores (cpf, nome, apartamento, email, senha) VALUES (?, ?, ?, ?, ?)",
+            (22587939745, 'Gabriel', '101', 'gabriel@email.com', '1234'))
+
+cur.execute("INSERT INTO moradores (cpf, nome, apartamento, email, senha) VALUES (?, ?, ?, ?, ?)",
+            (28964851257, 'Fabiana', '102', 'fabiana@email.com', '5678'))
 
 connection.commit()
 connection.close()
+print("Banco criado com sucesso com dados de teste.")

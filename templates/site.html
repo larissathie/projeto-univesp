@@ -115,6 +115,10 @@
 
 </head>
 <body>
+  {% if error %}
+  <div style="color: red;">{{ error }}</div>
+  {% endif %}
+
   <header>
     <h1>Sistema Cadastral para Condomínios</h1>
     <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo da página">

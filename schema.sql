@@ -1,35 +1,43 @@
-DROP TABLE IF EXISTS moradores;
-DROP TABLE IF EXISTS agendamento_evento;
-DROP TABLE IF EXISTS visitantes_apartamento;
 DROP TABLE IF EXISTS visitantes_eventos;
+DROP TABLE IF EXISTS visitantes_apartamento;
+DROP TABLE IF EXISTS agendamento_evento;
+DROP TABLE IF EXISTS moradores;
 
 CREATE TABLE moradores (
-    cpf INT PRIMARY KEY, --Natural Key (NK) para cada morador, remove uma coluna (id), visando otimizar armazenamento
-    nome VARCHAR(50) NOT NULL,
-    apartamento VARCHAR(10) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    senha VARCHAR(100) NOT NULL
-)
+    cpf INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL,
+    apartamento TEXT NOT NULL,
+    email TEXT NOT NULL,
+    senha TEXT NOT NULL
+);
 
 CREATE TABLE agendamento_evento (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    cpf_morador INT REFERENCES morador(cpf) NOT NULL -- Chave Estrangeira, para mostrar quem foi o responsável pela locação
-    data date NOT NULL,
-    local int NOT NULL, -
-    ambientes VARCHAR(30) CHECK('churrasqueira', 'salão de festas') NOT NULL -- sugestão para substituir o atributo local acima
-    apartamento VARCHAR(10) NOT NULL
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cpf_morador INTEGER NOT NULL,
+    data DATE NOT NULL,
+    local INTEGER NOT NULL,
+    ambientes TEXT NOT NULL CHECK (ambientes IN ('churrasqueira', 'salão de festas')),
+    apartamento TEXT NOT NULL,
+    FOREIGN KEY (cpf_morador) REFERENCES moradores(cpf)
 );
 
 CREATE TABLE visitantes_apartamento (
-    cpf_visitante INT PRIMARY KEY,
-    cpf_morador INT REFERENCES moradores(cpf) NOT NULL, -- chave estrangeira referenciada da tabela moradores
-    nome VARCHAR(50),
-    apartamento VARCHAR(10)
+    cpf_visitante INTEGER PRIMARY KEY,
+    cpf_morador INTEGER NOT NULL,
+    nome TEXT,
+    apartamento TEXT,
+    FOREIGN KEY (cpf_morador) REFERENCES moradores(cpf)
 );
 
 CREATE TABLE visitantes_eventos (
-    cpf_visitante INT PRIMARY KEY,
-    cpf_morador INT REFERENCES moradores(cpf) NOT NULL, -- chave estrangeira referenciada da tabela moradores
-    nome VARCHAR(50),
-    apartamento VARCHAR(10)
-)
+    cpf_visitante INTEGER PRIMARY KEY,
+    cpf_morador INTEGER NOT NULL,
+    nome TEXT,
+    apartamento TEXT,
+    FOREIGN KEY (cpf_morador) REFERENCES moradores(cpf)
+);
+
+-- Dados de exemplo para moradores
+INSERT INTO moradores (cpf, nome, apartamento, email, senha) VALUES
+(26556898741, 'Gabriel', '101', 'emailGabriel@email.com', '1111'),
+(28835445881, 'Fabiana', '102', 'emailFabiana@email.com', '2222');
