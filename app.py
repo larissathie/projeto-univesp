@@ -4,7 +4,9 @@ import sqlite3
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from flask import session
+from werkzeug.exceptions import abort
 
+cpfUsuario = 0
 project_dir = os.path.dirname(os.path.abspath(__file__))
 database_file = "sqlite:///{}".format(os.path.join(project_dir,"database.db"))
 
@@ -22,7 +24,6 @@ app.config['MAIL_DEFAULT_SENDER'] = 'grupopiunivespsala6grupo7@gmail.com'
 
 mail = Mail(app)
 
-
 @app.route('/ajuda', methods=['GET', 'POST'])
 def ajuda():
     if request.method == 'POST':
@@ -38,7 +39,6 @@ def ajuda():
 
         flash('Mensagem enviada com sucesso!', 'success')
         return redirect(url_for('ajuda'))
-
     return render_template('ajuda.html') 
 
 class Usuario(db.Model):
@@ -67,6 +67,18 @@ class ConvidadoEvento(db.Model):
 
     morador = db.relationship('Usuario', backref=db.backref('convidados_eventos', lazy=True))
 
+
+####### FUNÇÕES
+### FUNÇÃO GET FAMILIAR
+def get_familiar(familiar_cpf):
+    familiar = Familiar.query.filter_by(cpf_visitante = familiar_cpf ).first()
+    if familiar is None:
+        abort(484)
+    return familiar
+
+
+
+#########  ROTAS
 @app.route('/')
 def index():
     return render_template('site.html')
@@ -79,86 +91,40 @@ def criarconta():
 def login():
     usuario = request.form['usuario']
     senha = request.form['senha']
-
     if not usuario or not senha:
         return render_template('site.html', error="Por favor, preencha usuário e senha!")
-
     user = Usuario.query.filter_by(email=usuario, senha=senha).first()
-    
     if user:
         session['usuario_cpf'] = user.cpf
-        session['usuario_nome'] = user.nome #apresenta o nome do usuário no lado direito da tela
+        session['usuario_nome'] = user.nome
+        session['usuario_apartamento'] = user.apartamento #apresenta o nome do usuário no lado direito da tela
         return redirect(url_for('pagina_inicial')) 
     else:
         return render_template('site.html', error="Usuário ou senha incorretos!")
 
 @app.route('/pinicial')
 def pagina_inicial():
+    cpfUsuario = session.get('usuario_cpf')
     nome_usuario = session.get('usuario_nome')
-    return render_template('pinicial.html', nome=nome_usuario)
+    usuario_cpf = session.get('usuario_cpf')
+    usuario_apartamento = session.get('usuario_apartamento')
+    return render_template('pinicial.html', nome=nome_usuario , cpf = usuario_cpf , apartamento = usuario_apartamento)
 
 @app.route('/perfil_usuario')
 def perfil_usuario():
     return render_template('perfil-usuario.html')
 
-@app.route('/cadastrar_familiares', methods=['GET', 'POST'])
-def cadastrar_familiares():
-    if 'usuario_cpf' not in session:
-        return redirect(url_for('index'))
-
-    cpf_morador = session['usuario_cpf']
-    familiares = Familiar.query.filter_by(cpf_morador=cpf_morador).all()
-
-    familiar_editado = None
-    if request.method == 'POST':
-        nome = request.form['nome']
-        cpf_visitante = request.form.get('cpf_visitante')
-        apartamento = request.form.get('apartamento')
-
-        if cpf_visitante:
-            familiar_editado = Familiar.query.get(cpf_visitante)
-            if familiar_editado and familiar_editado.cpf_morador == cpf_morador:
-                familiar_editado.nome = nome
-                familiar_editado.apartamento = apartamento
-                db.session.commit()
-        else:
-            novo_familiar = Familiar(
-                nome=nome,
-                apartamento=apartamento,
-                cpf_morador=cpf_morador,
-                cpf_visitante=datetime.datetime.now().timestamp()  # Simula ID único
-            )
-            db.session.add(novo_familiar)
-            db.session.commit()
-
-        return redirect(url_for('cadastrar_familiares'))
-
-    return render_template('cadastrar_familiares.html', familiares=familiares, familiar_editado=familiar_editado)
-
-@app.route('/excluir_familiar/<int:cpf_visitante>', methods=['POST'])
-def excluir_familiar(cpf_visitante):
-    familiar = Familiar.query.get_or_404(cpf_visitante)
-    if familiar.cpf_morador != session.get('usuario_cpf'):
-        return redirect(url_for('cadastrar_familiares'))
-
-    db.session.delete(familiar)
-    db.session.commit()
-    return redirect(url_for('cadastrar_familiares'))
-
 @app.route('/cadastrar_convidados', methods=['GET', 'POST'])
 def cadastrar_convidados():
     if 'usuario_cpf' not in session:
         return redirect(url_for('index'))
-
     cpf_morador = session['usuario_cpf']
     convidados = ConvidadoEvento.query.filter_by(cpf_morador=cpf_morador).all()
-
     convidado_editado = None
     if request.method == 'POST':
         nome = request.form['nome']
         cpf_visitante = request.form.get('cpf_visitante')
         apartamento = request.form.get('apartamento')
-
         if cpf_visitante:
             convidado_editado = ConvidadoEvento.query.get(cpf_visitante)
             if convidado_editado and convidado_editado.cpf_morador == cpf_morador:
@@ -184,10 +150,84 @@ def excluir_convidado(cpf_visitante):
     convidado = ConvidadoEvento.query.get_or_404(cpf_visitante)
     if convidado.cpf_morador != session.get('usuario_cpf'):
         return redirect(url_for('cadastrar_convidados'))
-
     db.session.delete(convidado)
     db.session.commit()
     return redirect(url_for('cadastrar_convidados'))
+
+
+##
+### METODO PARA CRIAR USUÁRIOS / MORADORES
+##
+@app.route('/criar' , methods=['GET','POST'])
+def cadastrar_usuario():
+    print('entrou na função')
+    if request.method == 'POST':
+      print('deu o IF')
+      form_nome = request.form['nome']
+      form_email = request.form['email']
+      form_cpf = request.form['cpf']
+      form_ap = request.form['ap']
+      form_senha = request.form['password']
+      confirmaSenha = request.form['confirm-password']
+    if not form_nome:
+            print('deu o IFNOT')
+            flash('O título é obrigatório!')
+    else: 
+          print('tentou cadastrar no banco')
+          user = Usuario(cpf = form_cpf, nome = form_nome , apartamento = form_ap ,email = form_email, senha = form_senha)
+          db.session.add(user)
+          db.session.commit()
+          print('cadastrou')
+          return redirect(url_for('criarconta'))      
+    return render_template('criarconta')
+
+
+##
+### ROTA PARA TELA DE CADASTRAR FAMILIARES
+##
+@app.route('/cadastrar_familiares', methods=['GET', 'POST'])
+def cadastrar_familiares():
+    cpf_morador = session.get('usuario_cpf')
+    familiares = Familiar.query.filter_by(cpf_morador=cpf_morador).all()
+    return render_template('cadastrar_familiares.html', familiares=familiares)
+    
+##
+### ROTA PARA ADICIONAR FAMILIAR
+##
+@app.route('/addFamiliar' , methods=['GET','POST'])
+def adicionarFamiliar():
+    print('entrou na função')   
+   
+    if request.method == 'POST':
+     print('deu o IF')
+     form_nome = request.form['nome']
+     form_cpf = request.form['cpf']
+     form_cpfMorador = session.get('usuario_cpf')
+     form_ap = session.get('usuario_apartamento')
+   
+    if not form_nome:
+      print('deu o IFNOT')
+      flash('O título é obrigatório!')
+    else: 
+      print(cpfUsuario)
+      print('tentou cadastrar no banco')
+      familiar = Familiar(nome = form_nome ,cpf_morador = form_cpfMorador ,cpf_visitante = form_cpf , apartamento = form_ap)
+      db.session.add(familiar)
+      db.session.commit()
+      print('cadastrou')
+      return redirect(url_for('cadastrar_familiares'))         
+    return render_template('cadastrar_familiares')
+
+##
+### ROTA PARA DELETAR UM FAMILIAR
+##
+@app.route('/<int:cpf>/delete', methods=('POST',))
+def delete(cpf):
+    familiarExcluido = get_familiar(cpf)
+    db.session.delete(familiarExcluido)
+    db.session.commit()    
+    return redirect(url_for('cadastrar_familiares'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

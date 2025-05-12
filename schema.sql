@@ -24,8 +24,8 @@ CREATE TABLE agendamento_evento (
 CREATE TABLE visitantes_apartamento (
     cpf_visitante INTEGER PRIMARY KEY,
     cpf_morador INTEGER NOT NULL,
-    nome TEXT,
-    apartamento TEXT,
+    nome TEXT NOT NULL,
+    apartamento TEXT NOT NULL,
     FOREIGN KEY (cpf_morador) REFERENCES moradores(cpf)
 );
 
@@ -38,6 +38,6 @@ CREATE TABLE visitantes_eventos (
 );
 
 -- Dados de exemplo para moradores
-INSERT INTO moradores (cpf, nome, apartamento, email, senha) VALUES
-(26556898741, 'Gabriel', '101', 'emailGabriel@email.com', '1111'),
-(28835445881, 'Fabiana', '102', 'emailFabiana@email.com', '2222');
+--INSERT INTO moradores (cpf, nome, apartamento, email, senha) VALUES
+--(26556898741, 'Gabriel', '101', 'emailGabriel@email.com', '1111'),
+--(28835445881, 'Fabiana', '102', 'emailFabiana@email.com', '2222');

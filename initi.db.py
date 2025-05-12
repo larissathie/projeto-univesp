@@ -14,6 +14,11 @@ cur.execute("INSERT INTO moradores (cpf, nome, apartamento, email, senha) VALUES
 cur.execute("INSERT INTO moradores (cpf, nome, apartamento, email, senha) VALUES (?, ?, ?, ?, ?)",
             (28964851257, 'Fabiana', '102', 'fabiana@email.com', '5678'))
 
+cur.execute("INSERT INTO visitantes_apartamento (cpf_visitante, cpf_morador, nome, apartamento) VALUES (?, ?, ?, ?)",
+            (22587939745, 1231233, 'visitante', '101'))
+
+
+
 connection.commit()
 connection.close()
 print("Banco criado com sucesso com dados de teste.")
