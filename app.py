@@ -228,6 +228,40 @@ def delete(cpf):
     db.session.commit()    
     return redirect(url_for('cadastrar_familiares'))
 
+ ### ROTA PARA CADASTRAR CONVIDADOS CHURRASQUEIRA
+
+@app.route('/cadastrar_convidados_churrasqueira', methods=['GET', 'POST'])
+def cadastrar_convidados_churrasqueira():
+    if 'usuario_cpf' not in session:
+        return redirect(url_for('index'))
+
+    cpf_morador = session.get('usuario_cpf')
+    apartamento = session.get('usuario_apartamento')
+
+    if request.method == 'POST':
+        nome = request.form['nome']
+        cpf = request.form['cpf']
+        data_uso = request.form['data_uso']
+
+        novo_convidado = ConvidadoEvento(
+            nome=nome,
+            cpf_morador=cpf_morador,
+            apartamento=apartamento,
+            cpf_visitante=int(datetime.datetime.now().timestamp()),  # ID simulado
+            data_uso=data_uso
+        )
+        db.session.add(novo_convidado)
+        db.session.commit()
+
+        flash('Convidado adicionado com sucesso!', 'success')
+        return redirect(url_for('cadastrar_convidados_churrasqueira'))
+
+    convidados = ConvidadoEvento.query.filter_by(cpf_morador=cpf_morador).all()
+    return render_template('cadastrar_convidados_churrasqueira.html', convidados=convidados) 
+
+@app.route('/cadastrar_convidados_salao')
+def cadastrar_convidados_salao():
+    return render_template('cadastrar_convidados_salao.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
