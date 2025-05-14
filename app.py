@@ -4,6 +4,7 @@ import sqlite3
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from flask import session
+from datetime import datetime
 from werkzeug.exceptions import abort
 
 cpfUsuario = 0
@@ -66,6 +67,18 @@ class ConvidadoEvento(db.Model):
     apartamento = db.Column(db.String(10), nullable=False)
 
     morador = db.relationship('Usuario', backref=db.backref('convidados_eventos', lazy=True))
+
+
+class Espaco(db.Model):
+    __tablename__ = 'agendamento_evento'
+    id = db.Column(db.Integer, primary_key=True)
+    cpf_morador = db.Column(db.Integer, nullable=False)
+    data = db.Column(db.DateTime, nullable = False)
+    local = db.Column(db.Integer)
+    ambientes = db.Column(db.String(50), nullable=False)
+    apartamento = db.Column(db.String(10), nullable=False)
+   
+
 
 
 ####### FUNÇÕES
@@ -188,9 +201,23 @@ def cadastrar_usuario():
 @app.route('/cadastrar_familiares', methods=['GET', 'POST'])
 def cadastrar_familiares():
     cpf_morador = session.get('usuario_cpf')
-    familiares = Familiar.query.filter_by(cpf_morador=cpf_morador).all()
+    familiares = Familiar.query.all()
     return render_template('cadastrar_familiares.html', familiares=familiares)
-    
+
+##
+### ROTA PARA TELA DE CADASTRAR EVENTOS
+##
+@app.route('/cadastro_evento', methods=['GET', 'POST'])
+def evento():
+    nome_usuario = session.get('usuario_nome')
+    cpf_morador = session.get('usuario_cpf')
+    ap_morador = session.get('usuario_apartamento')
+    eventos = Espaco.query.filter_by(cpf_morador=cpf_morador).all()
+
+    return render_template('cadastrar_evento.html', nome=nome_usuario , cpf = cpf_morador , apartamento = ap_morador , eventos = eventos)
+
+
+
 ##
 ### ROTA PARA ADICIONAR FAMILIAR
 ##
@@ -262,6 +289,54 @@ def cadastrar_convidados_churrasqueira():
 @app.route('/cadastrar_convidados_salao')
 def cadastrar_convidados_salao():
     return render_template('cadastrar_convidados_salao.html')
+
+
+
+
+
+##
+### ROTA PARA ADICIONAR FAMILIAR
+##
+@app.route('/addEvento' , methods=['GET','POST'])
+def adicionarEvento():
+    print('entrou na função')   
+   
+    if request.method == 'POST':
+     print('deu o IF')
+     form_nome =session.get('usuario_nome')
+     form_cpf = session.get('usuario_cpf')     
+     form_ap = session.get('usuario_apartamento')
+     form_data = request.form['data_uso']
+     form_espaco = request.form['select']
+
+     data_obj = datetime.strptime(form_data, '%Y-%m-%d').date()
+   
+    if not form_nome:
+      print('deu o IFNOT')
+      flash('O título é obrigatório!')
+
+    else: 
+      
+      espaco = Espaco(cpf_morador = form_cpf, data = data_obj , local = 1 , ambientes = form_espaco , apartamento = form_ap)
+      db.session.add(espaco)
+      db.session.commit()
+      print('cadastrou')
+      return redirect(url_for('evento'))         
+    return render_template('cevento')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

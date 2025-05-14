@@ -106,8 +106,16 @@
       <div class="lado-esquerdo">
         <h1>Agendar Espaço</h1>
         <div class="espacos">
+          <a href="{{ url_for('evento') }}"> teste
+            <div class="espacos-img">              
+              <img src="#" alt="Imagem da churrasqueira">
+            </div>
+          </a>
+
+
+
           <a href="{{ url_for('cadastrar_convidados_churrasqueira') }}">
-            <div class="espacos-img">
+            <div class="espacos-img">              
               <img src="{{ url_for('static', filename='imagens/churrasqueira.jpeg') }}" alt="Imagem da churrasqueira">
             </div>
           </a>
@@ -115,9 +123,9 @@
             <div class="espacos-img">
               <img src="{{ url_for('static', filename='imagens/salao-de-festas.jpeg') }}" alt="Imagem salão de festa">
             </div>
-          </a>
+          </a>          
           <a href="{{ url_for('cadastrar_familiares') }}">
-            <div class="espacos-img">
+            <div class="espacos-img">              
               <img src="{{ url_for('static', filename='imagens/familia.png') }}" alt="Imagem de família">
             </div>
           </a>

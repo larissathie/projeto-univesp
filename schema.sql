@@ -16,6 +16,7 @@ CREATE TABLE agendamento_evento (
     cpf_morador INTEGER NOT NULL,
     data DATE NOT NULL,
     local INTEGER NOT NULL,
+    --Rever Salão de festas
     ambientes TEXT NOT NULL CHECK (ambientes IN ('churrasqueira', 'salão de festas')),
     apartamento TEXT NOT NULL,
     FOREIGN KEY (cpf_morador) REFERENCES moradores(cpf)

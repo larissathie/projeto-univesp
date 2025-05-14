@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Churrasqueira</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      display: flex;
+      padding: 30px;
+      gap: 50px;
+    }
+
+    .formulario {
+      flex: 1;
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      min-height: 80vh;
+    }
+
+    .formulario h1 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .formulario input[type="text"],
+    .formulario input[type="date"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 35px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .formulario button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .formulario button:hover {
+      background-color: #0056b3;
+    }
+
+    .lista-convidados {
+      flex: 1;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .lista-convidados h2 {
+      color: #333;
+    }
+
+    .convidado {
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #ccc;
+    }
+
+    .convidado h3,
+    .convidado h4 {
+      margin: 5px 0;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-danger:hover {
+      background-color: #a71d2a;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>CADASTRAR EVENTO</h1>
+  <div class="container">
+    
+    <div class="formulario">
+        <h1>Seu Perfil</h1>
+            <div class="perfil-info">
+              <p><strong>Nome:</strong> {{ nome }}</p>
+              <p><strong>Cpf:</strong> {{ cpf }}</p>
+              <p><strong>Apartamento:</strong> {{ apartamento }}</p>
+              <p><strong>Reserva Atual:</strong> Nenhuma reserva no momento.</p>
+              <p>Você ainda não possui reservas agendadas. Que tal agendar um espaço agora?</p>
+            </div>
+      <form method="POST" action="/addEvento">
+        <h1>{{ 'Editar Familiar' if familiar_editado else 'Cadastrar Evento' }}</h1>
+
+        <label>Data de Utilização da Churrasqueira:</label>
+        <input type="date" name="data_uso" required>
+
+        <label>Espaços </label>
+        <select name="select" id="">
+          <option value="churrasqueira">churrasqueira</option>
+          <!--REVER VALOR SALAO DE FESTAS -->
+          <option value="salÃ£o de festas">Salao</option>
+        </select>
+
+
+
+        <button type="submit">{{ 'Salvar' if familiar_editado else 'Cadastrar' }}</button>
+      </form>
+
+      
+
+    </div>
+
+    <div class="lista-convidados">
+      <h2>Convidados Cadastrados:</h2>
+      {% block content %}
+  <h2>eventos Cadastrados:</h2>
+  <ul>
+        {% for evento in eventos %}
+          <li>
+          <h3>Nome :{{ evento.data }} </h3>                          
+        </a>
+          <p>-------------------------------------------------</p>      
+          </li> 
+        {% endfor %}
+      </ul>
+      {% endblock %}
+    </div>
+  </div>
+
+</body>
+</html>
