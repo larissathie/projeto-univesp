@@ -4,102 +4,131 @@
   <meta charset="UTF-8">
   <title>Cadastrar Familiares</title>
   <style>
+    
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
+      margin: 0;
+      padding: 0;
       background-color: #f2f2f2;
     }
 
-    h1 {
+    .container {
+      display: flex;
+      min-height: 100vh;
+      padding: 30px;
+      gap: 40px;
+    }
+
+    .lado-esquerdo, .lado-direito {
+      flex: 1;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+    }
+
+    h1, h2, h3, h4 {
       color: #333;
+      margin-top: 0;
     }
 
     form {
-      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
     input[type="text"] {
       padding: 10px;
-      width: 300px;
+      width: 100%;
       border-radius: 4px;
       border: 1px solid #ccc;
+      font-size: 16px;
     }
 
-    button {
-      padding: 8px 15px;
+    button, input[type="submit"] {
+      padding: 10px 15px;
       border: none;
       background-color: #007BFF;
       color: white;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 16px;
     }
 
-    button:hover {
+    button:hover, input[type="submit"]:hover {
       background-color: #0056b3;
     }
 
+    ul {
+      padding-left: 20px;
+    }
+
     li {
-      margin-bottom: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #ccc;
     }
 
-    .botoes {
-      display: inline-flex;
-      gap: 5px;
+    .btn-danger {
+      background-color: #dc3545;
     }
 
-    .container-esquerdo {
-          display: flex;
-          height: 100vh;
-          background: url('background.jpg') no-repeat center center/cover;
-        }
-      
+    .btn-danger:hover {
+      background-color: #a71d2a;
+    }
       
 
   </style>
 </head>
 
 <body>
-  <div class="container-esquerdo">
-    <form method="POST" action="/addFamiliar">
-    <div>
+  <div class="container">
+    <div class="lado-esquerdo">
+      <form method="POST" action="/addFamiliar">
         <h1>{{ 'Editar Familiar' if familiar_editado else 'Cadastrar Familiar' }}</h1>
-        <h3>Nome do familiar</h3>  
-           <input type="text" name="nome" placeholder="Nome completo do familiar"
-           value="{{ familiar_editado.nome if familiar_editado else '' }}" required>
-    </div>
-    <div>
-      <h3>Cpf do familiar</h3>
-      <input type="text" name="cpf" placeholder="cpf visitante"
-             value="{{ familiar_editado.nome if familiar_editado else '' }}" required>
-    </div>      
 
-    {% if familiar_editado %}
-      <input type="hidden" name="familiar_id" value="{{ familiar_editado.id }}">
-    {% endif %}
-    <p> </p>
-    <button type="submit">{{ 'Salvar' if familiar_editado else 'Adicionar' }}</button>
-  </form>
+        <div>
+            <h3>Nome do familiar</h3>  
+              <input type="text" name="nome" placeholder="Nome completo do familiar"
+              value="{{ familiar_editado.nome if familiar_editado else '' }}" required>
+        </div>
+
+        <div>
+          <h3>Cpf do familiar</h3>
+          <input type="text" name="cpf" placeholder="cpf visitante"
+                value="{{ familiar_editado.nome if familiar_editado else '' }}" required>
+        </div>      
+
+        {% if familiar_editado %}
+          <input type="hidden" name="familiar_id" value="{{ familiar_editado.id }}">
+        {% endif %}
+
+        <button type="submit">{{ 'Salvar' if familiar_editado else 'Adicionar' }}</button>
+      </form>
+    </div>
   
-  <div class="direito">
-  {% block content %}
-  <h2>Familiares Cadastrados:</h2>
-  <ul>
-    {% for familiar in familiares %}
-      <li>
-       <h3>Nome :{{ familiar.nome }} </h3> 
-       <h4>Cpf :{{ familiar.cpf_visitante }}</h4> 
-       <h4>Apartamento:{{ familiar.apartamento }}</h4>
-             <form action="{{url_for('delete', cpf = familiar.cpf_visitante)}}" method="POST">
-              <input type="submit" value="Apagar" class="btn btn-danger btn-sn"
-              onclick="return confirm('Tem certeza que deseja apagar esse familiar?')"> 
-              </form>
-    </a>
-       <p>-------------------------------------------------</p>      
-      </li> 
-    {% endfor %}
-  </ul>
-  {% endblock %}
+    <!-- Lado direito: Lista de familiares -->
+    <div class="lado-direito">
+      {% block content %}
+      <h2>Familiares Cadastrados:</h2>
+        <ul>
+          {% for familiar in familiares %}
+            <li>
+            <h3>Nome :{{ familiar.nome }} </h3> 
+            <h4>Cpf :{{ familiar.cpf_visitante }}</h4> 
+            <h4>Apartamento:{{ familiar.apartamento }}</h4>
+                  <form action="{{url_for('delete', cpf = familiar.cpf_visitante)}}" method="POST">
+                    <input type="submit" value="Apagar" class="btn btn-danger btn-sn"
+                    onclick="return confirm('Tem certeza que deseja apagar esse familiar?')"> 
+                  </form>
+                  </li>
+          {% endfor %}
+        </ul>
+      {% endblock %}
+    </div>
+
   </div>
-</div>
 </body>
 </html>
