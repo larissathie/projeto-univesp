@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Churrasqueira</title>
+  <title>Cadastrar evento</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -93,9 +93,7 @@
   </style>
 </head>
 <body>
-  <h1>CADASTRAR EVENTO</h1>
   <div class="container">
-    
     <div class="formulario">
         <h1>Seu Perfil</h1>
             <div class="perfil-info">
@@ -105,25 +103,23 @@
               <p><strong>Reserva Atual:</strong> Nenhuma reserva no momento.</p>
               <p>Você ainda não possui reservas agendadas. Que tal agendar um espaço agora?</p>
             </div>
-      <form method="POST" action="/addEvento">
-        <h1>{{ 'Editar Familiar' if familiar_editado else 'Cadastrar Evento' }}</h1>
-
-        <label>Data de Utilização da Churrasqueira:</label>
-        <input type="date" name="data_uso" required>
-
-        <label>Espaços </label>
-        <select name="select" id="">
-          <option value="churrasqueira">churrasqueira</option>
-          <!--REVER VALOR SALAO DE FESTAS -->
-          <option value="salÃ£o de festas">Salao</option>
-        </select>
-
+            
+        <div>
+          <form method="POST" action="/addEvento">
+          <h1>{{ 'Editar Familiar' if familiar_editado else 'Cadastrar Evento' }}</h1>
+          <label>Data de Utilização:</label>
+          <input type="date" name="data_uso" required>
+          <label>Espaços </label>
+          <select name="select" id="">
+            <option value="churrasqueira">churrasqueira</option>
+            <!--REVER VALOR SALAO DE FESTAS -->
+            <option value="salÃ£o de festas">Salao</option>
+          </select>
+        </div>
 
 
         <button type="submit">{{ 'Salvar' if familiar_editado else 'Cadastrar' }}</button>
       </form>
-
-      
 
     </div>
 

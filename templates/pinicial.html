@@ -62,7 +62,7 @@
           display: flex;
           justify-content: center; 
           align-items: center;    
-          gap: 20px;
+          gap: 120px;
           flex-wrap: nowrap;    
           overflow-x: none;        
           max-height: 300px;
@@ -70,7 +70,7 @@
 
         .espacos-img {
           width: 200px;  
-          height: auto;
+          height: 300px;
           border-radius: 10px;
         }
 
@@ -79,10 +79,11 @@
         }
 
         .espacos-img img {
-          width: 100%;
-          max-width: 250px;
-          height: auto;
+          width: 250px;
+          height: 180px;
+          object-fit: cover;
           border-radius: 10px;
+
         }
 
         .perfil-info {
@@ -104,26 +105,13 @@
 
     <div class="pagina-inicial">
       <div class="lado-esquerdo">
-        <h1>Agendar Espaço</h1>
+        <h1>Locais</h1>
         <div class="espacos">
-          <a href="{{ url_for('evento') }}"> teste
+          <a href="{{ url_for('evento') }}"> 
             <div class="espacos-img">              
-              <img src="#" alt="Imagem da churrasqueira">
+              <img src="{{ url_for('static', filename='imagens/espacos.png') }}" alt="Imagem dos espaços">
             </div>
-          </a>
-
-
-
-          <a href="{{ url_for('cadastrar_convidados_churrasqueira') }}">
-            <div class="espacos-img">              
-              <img src="{{ url_for('static', filename='imagens/churrasqueira.jpeg') }}" alt="Imagem da churrasqueira">
-            </div>
-          </a>
-          <a href="{{ url_for('cadastrar_convidados_salao') }}">
-            <div class="espacos-img">
-              <img src="{{ url_for('static', filename='imagens/salao-de-festas.jpeg') }}" alt="Imagem salão de festa">
-            </div>
-          </a>          
+          </a>        
           <a href="{{ url_for('cadastrar_familiares') }}">
             <div class="espacos-img">              
               <img src="{{ url_for('static', filename='imagens/familia.png') }}" alt="Imagem de família">
@@ -131,7 +119,6 @@
           </a>
       </div>
     </div>
-  
     <div class="lado-direito">
       <h1>Seu Perfil</h1>
       <div class="perfil-info">
