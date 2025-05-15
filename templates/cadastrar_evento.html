@@ -30,7 +30,6 @@
       color: #333;
     }
 
-    .formulario input[type="text"],
     .formulario input[type="date"] {
       width: 100%;
       padding: 10px;
@@ -52,6 +51,19 @@
       background-color: #0056b3;
     }
 
+    
+    .espacamento-superior {
+      margin-top: 70px;
+    }
+
+    .campo-select {
+      width: 180px;        
+      height: 35px;
+      font-size: 16px;
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+
     .lista-convidados {
       flex: 1;
       background-color: #ffffff;
@@ -60,34 +72,58 @@
       max-height: 90vh;
       overflow-y: auto;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+      display: flex;
+      flex-direction: column;
+      
+    }
+
+    .eventos-cadastrados {
+      margin-bottom: 30px;
+    }
+
+    .eventos-cadastrados ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+
+    .eventos-cadastrados li {
+      margin-bottom: 10px;
     }
 
     .lista-convidados h2 {
       color: #333;
     }
 
-    .convidado {
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px dashed #ccc;
+    .cadastro-convidado {
+      margin-top: 20px;
     }
 
-    .convidado h3,
-    .convidado h4 {
-      margin: 5px 0;
+    .cadastro-convidado h2 {
+      margin-top: 20px;
+      margin-bottom: 42px;
     }
 
-    .btn-danger {
-      background-color: #dc3545;
-      color: white;
-      padding: 6px 12px;
+    .cadastro-convidado input[type="text"] {
+      width: 50%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .cadastro-convidado button {
+      padding: 10px 20px;
       border: none;
+      background-color: #28a745;
+      color: white;
       border-radius: 4px;
       cursor: pointer;
     }
 
-    .btn-danger:hover {
-      background-color: #a71d2a;
+    .cadastro-convidado button:hover {
+      background-color: #218838;
     }
 
   </style>
@@ -104,19 +140,17 @@
               <p>Você ainda não possui reservas agendadas. Que tal agendar um espaço agora?</p>
             </div>
             
-        <div>
-          <form method="POST" action="/addEvento">
-          <h1>{{ 'Editar Familiar' if familiar_editado else 'Cadastrar Evento' }}</h1>
+          <form method="POST" action="/addEvento" class="espacamento-superior">
+          <h2>{{ 'Editar Familiar' if familiar_editado else 'Reservar espaço' }}</h2>
           <label>Data de Utilização:</label>
           <input type="date" name="data_uso" required>
           <label>Espaços </label>
-          <select name="select" id="">
-            <option value="churrasqueira">churrasqueira</option>
-            <!--REVER VALOR SALAO DE FESTAS -->
-            <option value="salÃ£o de festas">Salao</option>
-          </select>
-        </div>
 
+          <select name="select" id="" class="campo-select">  <!-- Campo ID está vazio-->
+            <option value="churrasqueira">Churrasqueira</option>
+            <!--REVER VALOR SALAO DE FESTAS -->
+            <option value="salÃ£o de festas">Salão</option> <!-- Confirmar  o valor para salao de festas-->
+          </select>
 
         <button type="submit">{{ 'Salvar' if familiar_editado else 'Cadastrar' }}</button>
       </form>
@@ -124,19 +158,26 @@
     </div>
 
     <div class="lista-convidados">
-      <h2>Convidados Cadastrados:</h2>
-      {% block content %}
-  <h2>eventos Cadastrados:</h2>
-  <ul>
-        {% for evento in eventos %}
-          <li>
-          <h3>Nome :{{ evento.data }} </h3>                          
-        </a>
-          <p>-------------------------------------------------</p>      
-          </li> 
-        {% endfor %}
-      </ul>
-      {% endblock %}
+
+      <div class="eventos-cadastrados">
+        <h2>Eventos Cadastrados:</h2>
+        <ul>
+          {% for evento in eventos %}
+            <li>
+              <strong>Data:</strong> {{ evento.data.strftime('%d/%m/%Y') }}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="cadastro-convidado">
+        <h2>Cadastrar Convidado:</h2>
+        <form method="POST" action="/addConvidado">
+          <input type="text" name="nome_convidado" placeholder="Nome do convidado" required>
+          <button type="submit">Adicionar</button>
+        </form>
+      </div>
+
     </div>
   </div>
 
