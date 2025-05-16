@@ -49,6 +49,7 @@ class Usuario(db.Model):
     apartamento = db.Column(db.String(10), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     senha = db.Column(db.String(100), nullable=False)
+    admin = db.Column(db.String(3), nullable=False)
 
 class Familiar(db.Model):
     __tablename__ = 'visitantes_apartamento'
@@ -61,13 +62,10 @@ class Familiar(db.Model):
 
 class ConvidadoEvento(db.Model):
     __tablename__ = 'visitantes_eventos'
-    cpf_visitante = db.Column(db.Integer, primary_key=True)
-    cpf_morador = db.Column(db.Integer, db.ForeignKey('moradores.cpf'), nullable=False)
+    id_visitante = db.Column(db.Integer, primary_key=True)
+    id_agendamento = db.Column(db.Integer, db.ForeignKey('agendamento_evento.id'), nullable=False)   
     nome = db.Column(db.String(50), nullable=False)
     apartamento = db.Column(db.String(10), nullable=False)
-
-    morador = db.relationship('Usuario', backref=db.backref('convidados_eventos', lazy=True))
-
 
 class Espaco(db.Model):
     __tablename__ = 'agendamento_evento'
@@ -77,9 +75,8 @@ class Espaco(db.Model):
     local = db.Column(db.Integer)
     ambientes = db.Column(db.String(50), nullable=False)
     apartamento = db.Column(db.String(10), nullable=False)
+    convidados = db.relationship('ConvidadoEvento', backref='evento', cascade='all, delete-orphan')
    
-
-
 
 ####### FUNÇÕES
 ### FUNÇÃO GET FAMILIAR
@@ -89,6 +86,26 @@ def get_familiar(familiar_cpf):
         abort(484)
     return familiar
 
+### FUNÇÃO GET EVENTOS
+def get_eventos(id):
+    eventos = Espaco.query.filter_by(id = id).first()
+    if eventos is None:
+        abort(484)
+    return eventos
+
+### FUNÇÃO GET CONVIDADOS   
+def get_convidados(id_agendamento):
+    convidados = ConvidadoEvento.query.filter_by(id_agendamento = id_agendamento).all()
+    if convidados is None:
+        abort(484)
+    return convidados
+
+### FUNÇÃO GET CONVIDADO UNICO  
+def get_convidado_unico(idConvidado):
+    convidadoUnico = ConvidadoEvento.query.filter_by(id_visitante = idConvidado).first()
+    if convidadoUnico is None:
+        abort(484)
+    return convidadoUnico
 
 
 #########  ROTAS
@@ -99,6 +116,10 @@ def index():
 @app.route('/criar_conta.html')
 def criarconta():
     return render_template('criar_conta.html')
+
+@app.route('/pesquisa_acesso.html', methods=['GET','POST'])
+def pesquisaEntrada():
+    return render_template('pesquisa_acesso.html')
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -111,6 +132,7 @@ def login():
         session['usuario_cpf'] = user.cpf
         session['usuario_nome'] = user.nome
         session['usuario_apartamento'] = user.apartamento #apresenta o nome do usuário no lado direito da tela
+        session['usuario_admin'] = user.admin
         return redirect(url_for('pagina_inicial')) 
     else:
         return render_template('site.html', error="Usuário ou senha incorretos!")
@@ -121,52 +143,12 @@ def pagina_inicial():
     nome_usuario = session.get('usuario_nome')
     usuario_cpf = session.get('usuario_cpf')
     usuario_apartamento = session.get('usuario_apartamento')
-    return render_template('pinicial.html', nome=nome_usuario , cpf = usuario_cpf , apartamento = usuario_apartamento)
+    usuario_admin = session.get('usuario_admin')
+    return render_template('pinicial.html', nome=nome_usuario , cpf = usuario_cpf , apartamento = usuario_apartamento, admin = usuario_admin)
 
 @app.route('/perfil_usuario')
 def perfil_usuario():
     return render_template('perfil-usuario.html')
-
-@app.route('/cadastrar_convidados', methods=['GET', 'POST'])
-def cadastrar_convidados():
-    if 'usuario_cpf' not in session:
-        return redirect(url_for('index'))
-    cpf_morador = session['usuario_cpf']
-    convidados = ConvidadoEvento.query.filter_by(cpf_morador=cpf_morador).all()
-    convidado_editado = None
-    if request.method == 'POST':
-        nome = request.form['nome']
-        cpf_visitante = request.form.get('cpf_visitante')
-        apartamento = request.form.get('apartamento')
-        if cpf_visitante:
-            convidado_editado = ConvidadoEvento.query.get(cpf_visitante)
-            if convidado_editado and convidado_editado.cpf_morador == cpf_morador:
-                convidado_editado.nome = nome
-                convidado_editado.apartamento = apartamento
-                db.session.commit()
-        else:
-            novo_convidado = ConvidadoEvento(
-                nome=nome,
-                apartamento=apartamento,
-                cpf_morador=cpf_morador,
-                cpf_visitante=datetime.datetime.now().timestamp()  # Simula ID único
-            )
-            db.session.add(novo_convidado)
-            db.session.commit()
-
-        return redirect(url_for('cadastrar_convidados'))
-
-    return render_template('cadastrar_convidados.html', convidados=convidados, convidado_editado=convidado_editado)
-
-@app.route('/excluir_convidado/<int:cpf_visitante>', methods=['POST'])
-def excluir_convidado(cpf_visitante):
-    convidado = ConvidadoEvento.query.get_or_404(cpf_visitante)
-    if convidado.cpf_morador != session.get('usuario_cpf'):
-        return redirect(url_for('cadastrar_convidados'))
-    db.session.delete(convidado)
-    db.session.commit()
-    return redirect(url_for('cadastrar_convidados'))
-
 
 ##
 ### METODO PARA CRIAR USUÁRIOS / MORADORES
@@ -175,25 +157,20 @@ def excluir_convidado(cpf_visitante):
 def cadastrar_usuario():
     print('entrou na função')
     if request.method == 'POST':
-      print('deu o IF')
       form_nome = request.form['nome']
       form_email = request.form['email']
       form_cpf = request.form['cpf']
       form_ap = request.form['ap']
       form_senha = request.form['password']
-      confirmaSenha = request.form['confirm-password']
-    if not form_nome:
-            print('deu o IFNOT')
-            flash('O título é obrigatório!')
+      form_Admin = request.form['selectUser']
+    if not form_nome:   
+            flash('O nome é obrigatório!')
     else: 
-          print('tentou cadastrar no banco')
-          user = Usuario(cpf = form_cpf, nome = form_nome , apartamento = form_ap ,email = form_email, senha = form_senha)
+          user = Usuario(cpf = form_cpf, nome = form_nome , apartamento = form_ap ,email = form_email, senha = form_senha, admin = form_Admin)
           db.session.add(user)
-          db.session.commit()
-          print('cadastrou')
+          db.session.commit()          
           return redirect(url_for('criarconta'))      
     return render_template('criarconta')
-
 
 ##
 ### ROTA PARA TELA DE CADASTRAR FAMILIARES
@@ -201,47 +178,28 @@ def cadastrar_usuario():
 @app.route('/cadastrar_familiares', methods=['GET', 'POST'])
 def cadastrar_familiares():
     cpf_morador = session.get('usuario_cpf')
-    familiares = Familiar.query.all()
+    familiares = Familiar.query.filter_by(cpf_morador = cpf_morador).all()
     return render_template('cadastrar_familiares.html', familiares=familiares)
-
-##
-### ROTA PARA TELA DE CADASTRAR EVENTOS
-##
-@app.route('/cadastro_evento', methods=['GET', 'POST'])
-def evento():
-    nome_usuario = session.get('usuario_nome')
-    cpf_morador = session.get('usuario_cpf')
-    ap_morador = session.get('usuario_apartamento')
-    eventos = Espaco.query.filter_by(cpf_morador=cpf_morador).all()
-
-    return render_template('cadastrar_evento.html', nome=nome_usuario , cpf = cpf_morador , apartamento = ap_morador , eventos = eventos)
-
-
 
 ##
 ### ROTA PARA ADICIONAR FAMILIAR
 ##
 @app.route('/addFamiliar' , methods=['GET','POST'])
-def adicionarFamiliar():
-    print('entrou na função')   
+def adicionarFamiliar():      
    
-    if request.method == 'POST':
-     print('deu o IF')
+    if request.method == 'POST':     
      form_nome = request.form['nome']
      form_cpf = request.form['cpf']
      form_cpfMorador = session.get('usuario_cpf')
      form_ap = session.get('usuario_apartamento')
    
-    if not form_nome:
-      print('deu o IFNOT')
+    if not form_nome:      
       flash('O título é obrigatório!')
     else: 
-      print(cpfUsuario)
-      print('tentou cadastrar no banco')
+      print(form_cpfMorador)     
       familiar = Familiar(nome = form_nome ,cpf_morador = form_cpfMorador ,cpf_visitante = form_cpf , apartamento = form_ap)
       db.session.add(familiar)
-      db.session.commit()
-      print('cadastrou')
+      db.session.commit()      
       return redirect(url_for('cadastrar_familiares'))         
     return render_template('cadastrar_familiares')
 
@@ -255,54 +213,25 @@ def delete(cpf):
     db.session.commit()    
     return redirect(url_for('cadastrar_familiares'))
 
- ### ROTA PARA CADASTRAR CONVIDADOS CHURRASQUEIRA
-
-@app.route('/cadastrar_convidados_churrasqueira', methods=['GET', 'POST'])
-def cadastrar_convidados_churrasqueira():
-    if 'usuario_cpf' not in session:
-        return redirect(url_for('index'))
-
+##
+### ROTA PARA TELA DE CADASTRAR EVENTOS
+##
+@app.route('/cadastro_evento', methods=['GET', 'POST'])
+def evento():
+    nome_usuario = session.get('usuario_nome')
     cpf_morador = session.get('usuario_cpf')
-    apartamento = session.get('usuario_apartamento')
+    ap_morador = session.get('usuario_apartamento')
+    eventos = Espaco.query.filter_by(cpf_morador=cpf_morador).all()
+    todosEventos = Espaco.query.all()
 
-    if request.method == 'POST':
-        nome = request.form['nome']
-        cpf = request.form['cpf']
-        data_uso = request.form['data_uso']
-
-        novo_convidado = ConvidadoEvento(
-            nome=nome,
-            cpf_morador=cpf_morador,
-            apartamento=apartamento,
-            cpf_visitante=int(datetime.datetime.now().timestamp()),  # ID simulado
-            data_uso=data_uso
-        )
-        db.session.add(novo_convidado)
-        db.session.commit()
-
-        flash('Convidado adicionado com sucesso!', 'success')
-        return redirect(url_for('cadastrar_convidados_churrasqueira'))
-
-    convidados = ConvidadoEvento.query.filter_by(cpf_morador=cpf_morador).all()
-    return render_template('cadastrar_convidados_churrasqueira.html', convidados=convidados) 
-
-@app.route('/cadastrar_convidados_salao')
-def cadastrar_convidados_salao():
-    return render_template('cadastrar_convidados_salao.html')
-
-
-
-
+    return render_template('cadastrar_evento.html', nome=nome_usuario , cpf = cpf_morador , apartamento = ap_morador , eventos = eventos , todosEventos = todosEventos)
 
 ##
-### ROTA PARA ADICIONAR FAMILIAR
+### ROTA PARA ADICIONAR EVENTO
 ##
 @app.route('/addEvento' , methods=['GET','POST'])
 def adicionarEvento():
-    print('entrou na função')   
-   
     if request.method == 'POST':
-     print('deu o IF')
      form_nome =session.get('usuario_nome')
      form_cpf = session.get('usuario_cpf')     
      form_ap = session.get('usuario_apartamento')
@@ -310,33 +239,95 @@ def adicionarEvento():
      form_espaco = request.form['select']
 
      data_obj = datetime.strptime(form_data, '%Y-%m-%d').date()
-   
-    if not form_nome:
-      print('deu o IFNOT')
-      flash('O título é obrigatório!')
-
-    else: 
-      
+  
+    if not form_nome:      
+      flash('O Nome é obrigatório!')
+    else:       
       espaco = Espaco(cpf_morador = form_cpf, data = data_obj , local = 1 , ambientes = form_espaco , apartamento = form_ap)
       db.session.add(espaco)
-      db.session.commit()
-      print('cadastrou')
+      db.session.commit()      
       return redirect(url_for('evento'))         
-    return render_template('cevento')
+    return render_template('evento')
 
 
+#
+## ROTA PARA DELETAR EVENTO
+#
+@app.route('/<int:id>/deleteEvento', methods=('POST',))
+def deleteEvento(id):   
+    EventoExcluido = get_eventos(id)       
+    db.session.delete(EventoExcluido)
+    db.session.commit()
+    return redirect(url_for('evento'))
 
 
+#
+## Rota para tela de visitantes
+#
+@app.route('/cadastrar_visitantes_Evento.html/<int:id>')
+def cadastrar_visitantes_Evento(id):
+    eventoCarregado = get_eventos(id) 
+    convidadosCarregados = get_convidados(id)
+    return render_template('cadastrar_visitantes_Evento.html', evento = eventoCarregado , convidados = convidadosCarregados)
+
+#
+## Rota para adicionar visitantes ao evento
+#
+@app.route('/addVisitante/<int:id>' , methods=['GET','POST'])
+def adicionarVisitante(id):
+    if request.method == 'POST':
+     
+     eventoAtual = get_eventos(id)
+     idEvento =  eventoAtual.id
+     form_nome = request.form['nome_convidado']
+     apartamento = eventoAtual.apartamento
+     
+    if not form_nome:      
+      flash('O Nome é obrigatório!')
+    else: 
+           
+      convidado = ConvidadoEvento(id_agendamento = idEvento, nome = form_nome , apartamento = apartamento)
+      db.session.add(convidado)
+      db.session.commit()
+      return redirect(url_for('cadastrar_visitantes_Evento', id = idEvento))         
+    return render_template('cadastrar_visitantes_Evento.html')
+
+#
+## ROTA PARA DELETAR CONVIDADO
+#
+@app.route('/<int:id>/deleteConvidado', methods=('POST',))
+def deleteConvidado(id):
+    convidadoExcluido = get_convidado_unico(id)    
+    idEvento = convidadoExcluido.id_agendamento 
+    db.session.delete(convidadoExcluido)
+    db.session.commit()
+    
+    return redirect(url_for('cadastrar_visitantes_Evento', id = idEvento))
 
 
-
-
-
-
-
-
-
-
+#
+## ROTA PARA PESQUISAR ACESSO
+#
+@app.route('/pesquisaNome' , methods=['GET','POST'])
+def pesquisaAcesso():    
+    if request.method == 'POST':
+     form_nome = request.form['nome'].strip()
+     familiar = Familiar.query.filter_by(nome = form_nome ).all()        
+    if familiar:                
+        tipoDeAcesso = 'Familiar'
+        return render_template('pesquisa_acesso.html', pessoa = familiar , tipoDePessoa = tipoDeAcesso )              
+    else:
+        print('Não achou na familia')
+        convidado = ConvidadoEvento.query.filter_by(nome = form_nome).all()
+    if convidado:        
+        tipoDeAcesso = 'Convidado'
+        convidadoEncontrado = ConvidadoEvento.query.filter_by(nome = form_nome).first()
+        eventoEncontrado = Espaco.query.filter_by(id = convidadoEncontrado.id_agendamento).first()
+        
+        return render_template('pesquisa_acesso.html', pessoa = convidado , tipoDePessoa = tipoDeAcesso , evento = eventoEncontrado)              
+        
+    else:        
+        return render_template('pesquisa_acesso.html', nome=form_nome)
 
 if __name__ == '__main__':
     app.run(debug=True)

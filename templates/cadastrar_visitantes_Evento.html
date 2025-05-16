@@ -131,66 +131,34 @@
 <body>
   <div class="container">
     <div class="formulario">
-        <h1>Seu Perfil</h1>
+        <h1>Sua Reserva : </h1>
             <div class="perfil-info">
-              <p><strong>Nome:</strong> {{ nome }}</p>
-              <p><strong>Cpf:</strong> {{ cpf }}</p>
-              <p><strong>Apartamento:</strong> {{ apartamento }}</p>
+              <p><strong><strong>Local:</strong> {{ evento.ambientes }}</p>
+              <p><strong>Data:</strong> {{ evento.data.strftime('%d/%m/%Y') }}
+              <p><strong>Ap:</strong> {{ evento.apartamento }}
             </div>
 
-            <div class="eventos-cadastrados">
-        <h2>Seus Eventos Cadastrados:</h2>
+            <h2>Convidados cadastrados:</h2>
         <ul>
-          {% for evento in eventos %}
-            <li>
-              <strong>Local:</strong> {{ evento.ambientes }}
-              <strong>Data:</strong> {{ evento.data.strftime('%d/%m/%Y') }}
-              <strong>Ap:</strong> {{ evento.apartamento }}
-              <div>
-                    <a href="{{ url_for('cadastrar_visitantes_Evento', id = evento['id'])}}">
-                        <button>Convidados</button>
-                    </a>
-                            <form action="{{url_for('deleteEvento', id = evento['id'])}}" method="POST">
-                            <input type="submit" value="Excluir Evento" class="btn btn-danger btn-sn"
-                            onclick="return confirm('Tem certeza que deseja apagar esse evento?')"> 
+          {% for convidado in convidados %}
+            <li>              
+              <strong>Nome:</strong> {{ convidado.nome }} 
+                     <form action="{{url_for('deleteConvidado', id = convidado['id_visitante'])}}" method="POST">
+                            <input type="submit" value="Excluir Convidado" class="btn btn-danger btn-sn"
+                            onclick="return confirm('Tem certeza que deseja excluir esse convidado?')"> 
                             </form>
-              </div>
             </li>
           {% endfor %}
         </ul>
-      </div>
-            
-          <form method="POST" action="/addEvento" class="espacamento-superior">
-          <h2>{{ 'Editar Familiar' if familiar_editado else 'Reservar espaço' }}</h2>
-          <label>Data de Utilização:</label>
-          <input type="date" name="data_uso" required>
-          <label>Espaços </label>
 
-          <select name="select" id="" class="campo-select">  <!-- Campo ID está vazio-->
-            <option value="churrasqueira">Churrasqueira</option>
-            <!--REVER VALOR SALAO DE FESTAS -->
-            <option value="salao de festas">Salão</option> <!-- Confirmar  o valor para salao de festas-->
-          </select>
-
-        <button type="submit">{{ 'Salvar' if familiar_editado else 'Cadastrar' }}</button>
-      </form>
     </div>
-
-    <div class="lista-convidados">
-      <div class="eventos-cadastrados">
-        <h2>Todos Eventos Cadastrados:</h2>
-        <ul>
-          {% for eventos in todosEventos %}
-            <li>
-              <strong>Local:</strong> {{ eventos.ambientes }}
-              <strong>Data:</strong> {{ eventos.data.strftime('%d/%m/%Y') }}
-              <strong>Ap:</strong> {{ eventos.apartamento }}            
-            </li>
-              
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
+                  <div class="cadastro-convidado">
+                    <h2>Cadastrar Convidado:</h2>
+                      <form method="POST" action="{{url_for('adicionarVisitante', id = evento['id'])}}">
+                        <input type="text" name="nome_convidado" placeholder="Nome do convidado" required>
+                        <button type="submit">Adicionar</button>
+                      </form>
+                  </div>
   </div>
 
 </body>

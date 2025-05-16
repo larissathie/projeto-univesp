@@ -105,6 +105,29 @@
 
     <div class="pagina-inicial">
       <div class="lado-esquerdo">
+      
+        {% if admin == 'sim' %}
+            <h1>SOU ADMINISTRADOR</h1>
+              <!-- Links que só aparecem para admin -->
+               <div class="espacos">
+                  <a href="criar_conta.html">Cadastrar Moradores
+                    <div class="espacos-img">              
+                      <img src="{{ url_for('static', filename='imagens/familia.png') }}" alt="Imagem de família">
+                    </div>
+                  </a> 
+
+                  <a href="pesquisa_acesso.html">Pesquisar acesso
+                    <div class="espacos-img">              
+                      <img src="{{ url_for('static', filename='imagens/familia.png') }}" alt="Imagem de família">
+                    </div>
+                  </a> 
+                 
+              </div>
+        {% endif %}
+
+
+
+
         <h1>Locais</h1>
         <div class="espacos">
           <a href="{{ url_for('evento') }}"> 
@@ -124,9 +147,8 @@
       <div class="perfil-info">
           <p><strong>Nome:</strong> {{ nome }}</p>
           <p><strong>Cpf:</strong> {{ cpf }}</p>
-          <p><strong>Apartamento:</strong> {{ apartamento }}</p>
-          <p><strong>Reserva Atual:</strong> Nenhuma reserva no momento.</p>
-          <p>Você ainda não possui reservas agendadas. Que tal agendar um espaço agora?</p>
+          <p><strong>Apartamento:</strong> {{ apartamento }}</p>   
+          <p><strong>administrador:</strong> {{ admin }}</p>                 
         </div>
       </div>
     </div>

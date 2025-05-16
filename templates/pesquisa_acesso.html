@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Pesquisa acesso</title>
+  <style>
+    
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f2f2f2;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+      padding: 30px;
+      gap: 40px;
+    }
+
+    .lado-esquerdo, .lado-direito {
+      flex: 1;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+    }
+
+    h1, h2, h3, h4 {
+      color: #333;
+      margin-top: 0;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 100%;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button, input[type="submit"] {
+      padding: 10px 15px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover, input[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #ccc;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+      background-color: #a71d2a;
+    }
+      
+
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="lado-esquerdo">
+      <form method="POST" action="/pesquisaNome">
+        <h1>{{ 'Editar Familiar' if familiar_editado else 'Pesquisar nome' }}</h1>
+
+        <div>
+            <h3>Nome : </h3>  
+              <input type="text" name="nome" placeholder="Nome completo do familiar"
+              value="{{ familiar_editado.nome if familiar_editado else '' }}" required>
+        </div>
+        
+        <button type="submit">{{ 'Salvar' if familiar_editado else 'Pesquisar' }}</button>
+      </form>
+    </div>
+  
+    <!-- Lado direito: Lista de familiares -->
+    <div class="lado-direito">
+      {% block content %}
+      <h2>Pessoa Cadastrada:</h2>
+        <ul>
+          {% for pessoas in pessoa %}
+            
+            <li>
+            <h3>Nome :{{ pessoas.nome }} </h3>             
+            <h4>Apartamento:{{ pessoas.apartamento }}</h4>
+            {% if tipoDePessoa == "Familiar"  %}
+            <h4>Cpf:{{ pessoas.cpf_visitante }}</h4>
+            {% endif %}
+            <h4>Tipo De Acesso:{{ tipoDePessoa}}</h4> 
+            {% if tipoDePessoa == "Convidado"  %}
+            <h1>evento: {{evento.ambientes}}</h1>
+            <h1>evento: {{evento.data}}</h1>
+            {% endif %}
+          </li> 
+          {% endfor %}          
+        </ul>
+      {% endblock %}
+    </div>
+    
+
+  </div>
+</body>
+</html>

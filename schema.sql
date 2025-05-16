@@ -8,7 +8,8 @@ CREATE TABLE moradores (
     nome TEXT NOT NULL,
     apartamento TEXT NOT NULL,
     email TEXT NOT NULL,
-    senha TEXT NOT NULL
+    senha TEXT NOT NULL,
+    admin text Not Null
 );
 
 CREATE TABLE agendamento_evento (
@@ -17,7 +18,7 @@ CREATE TABLE agendamento_evento (
     data DATE NOT NULL,
     local INTEGER NOT NULL,
     --Rever Salão de festas
-    ambientes TEXT NOT NULL CHECK (ambientes IN ('churrasqueira', 'salão de festas')),
+    ambientes TEXT NOT NULL CHECK (ambientes IN ('churrasqueira', 'salao de festas')),
     apartamento TEXT NOT NULL,
     FOREIGN KEY (cpf_morador) REFERENCES moradores(cpf)
 );
@@ -31,14 +32,13 @@ CREATE TABLE visitantes_apartamento (
 );
 
 CREATE TABLE visitantes_eventos (
-    cpf_visitante INTEGER PRIMARY KEY,
-    cpf_morador INTEGER NOT NULL,
+    id_visitante INTEGER PRIMARY KEY AUTOINCREMENT,    
+    id_agendamento INTEGER NOT NULL,
     nome TEXT,
     apartamento TEXT,
-    FOREIGN KEY (cpf_morador) REFERENCES moradores(cpf)
+    FOREIGN KEY (id_agendamento) REFERENCES agendamento_evento(id)
 );
 
--- Dados de exemplo para moradores
---INSERT INTO moradores (cpf, nome, apartamento, email, senha) VALUES
---(26556898741, 'Gabriel', '101', 'emailGabriel@email.com', '1111'),
+
+
 --(28835445881, 'Fabiana', '102', 'emailFabiana@email.com', '2222');
