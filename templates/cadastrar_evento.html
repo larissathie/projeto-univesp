@@ -129,8 +129,12 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="formulario">
+  <button onclick="window.location.href='/pinicial'">Voltar</button>
+      {% if error %}
+      <div style="color: red;">{{ error }}</div>
+      {% endif %}
+  <div class="container">    
+    <div class="formulario">      
         <h1>Seu Perfil</h1>
             <div class="perfil-info">
               <p><strong>Nome:</strong> {{ nome }}</p>

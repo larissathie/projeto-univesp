@@ -28,10 +28,10 @@ mail = Mail(app)
 @app.route('/ajuda', methods=['GET', 'POST'])
 def ajuda():
     if request.method == 'POST':
-        nome = request.form['nome']
-        email = request.form['email']
-        telefone = request.form['telefone']
-        mensagem = request.form['mensagem']
+        nome = request.form['nome'].lower()
+        email = request.form['email'].lower()
+        telefone = request.form['telefone'].lower()
+        mensagem = request.form['mensagem'].lower()
 
         msg = Message(subject='Nova mensagem do sistema de ajuda',
                       recipients=['grupopiunivespsala6grupo7@gmail.com'],  # E-mail de destino
@@ -123,7 +123,7 @@ def pesquisaEntrada():
 
 @app.route('/login', methods=['POST'])
 def login():
-    usuario = request.form['usuario']
+    usuario = request.form['usuario'].lower()
     senha = request.form['senha']
     if not usuario or not senha:
         return render_template('site.html', error="Por favor, preencha usuário e senha!")
@@ -139,7 +139,6 @@ def login():
 
 @app.route('/pinicial')
 def pagina_inicial():
-    cpfUsuario = session.get('usuario_cpf')
     nome_usuario = session.get('usuario_nome')
     usuario_cpf = session.get('usuario_cpf')
     usuario_apartamento = session.get('usuario_apartamento')
@@ -157,12 +156,21 @@ def perfil_usuario():
 def cadastrar_usuario():
     print('entrou na função')
     if request.method == 'POST':
-      form_nome = request.form['nome']
-      form_email = request.form['email']
+      form_nome = request.form['nome'].lower()
+      form_email = request.form['email'].lower()
       form_cpf = request.form['cpf']
-      form_ap = request.form['ap']
+      form_ap = request.form['ap'].lower()
       form_senha = request.form['password']
       form_Admin = request.form['selectUser']
+
+      
+      usuario_existente = Usuario.query.filter_by(cpf=form_cpf).first()      
+
+      if usuario_existente:            
+            flash('CPF já cadastrado no sistema!', 'error')
+            session['show_confirm'] = True
+            return render_template('criar_conta.html', error="CPF Já Cadastrado!")
+            
     if not form_nome:   
             flash('O nome é obrigatório!')
     else: 
@@ -179,7 +187,8 @@ def cadastrar_usuario():
 def cadastrar_familiares():
     cpf_morador = session.get('usuario_cpf')
     familiares = Familiar.query.filter_by(cpf_morador = cpf_morador).all()
-    return render_template('cadastrar_familiares.html', familiares=familiares)
+    error = request.args.get('error')
+    return render_template('cadastrar_familiares.html', familiares=familiares , error = error) 
 
 ##
 ### ROTA PARA ADICIONAR FAMILIAR
@@ -188,15 +197,21 @@ def cadastrar_familiares():
 def adicionarFamiliar():      
    
     if request.method == 'POST':     
-     form_nome = request.form['nome']
+     form_nome = request.form['nome'].lower()
      form_cpf = request.form['cpf']
      form_cpfMorador = session.get('usuario_cpf')
      form_ap = session.get('usuario_apartamento')
-   
+     
+     familiar_existente = Familiar.query.filter_by(cpf_visitante=form_cpf).first()
+    
+
+     if familiar_existente:
+        return redirect(url_for('cadastrar_familiares', error="CPF Já Cadastrado!"))     
+            
+
     if not form_nome:      
       flash('O título é obrigatório!')
-    else: 
-      print(form_cpfMorador)     
+    else:          
       familiar = Familiar(nome = form_nome ,cpf_morador = form_cpfMorador ,cpf_visitante = form_cpf , apartamento = form_ap)
       db.session.add(familiar)
       db.session.commit()      
@@ -221,10 +236,11 @@ def evento():
     nome_usuario = session.get('usuario_nome')
     cpf_morador = session.get('usuario_cpf')
     ap_morador = session.get('usuario_apartamento')
+    error = request.args.get('error')
     eventos = Espaco.query.filter_by(cpf_morador=cpf_morador).all()
     todosEventos = Espaco.query.all()
 
-    return render_template('cadastrar_evento.html', nome=nome_usuario , cpf = cpf_morador , apartamento = ap_morador , eventos = eventos , todosEventos = todosEventos)
+    return render_template('cadastrar_evento.html', nome=nome_usuario , cpf = cpf_morador , apartamento = ap_morador , eventos = eventos , todosEventos = todosEventos , error = error)
 
 ##
 ### ROTA PARA ADICIONAR EVENTO
@@ -238,8 +254,14 @@ def adicionarEvento():
      form_data = request.form['data_uso']
      form_espaco = request.form['select']
 
-     data_obj = datetime.strptime(form_data, '%Y-%m-%d').date()
-  
+     data_obj = datetime.strptime(form_data, '%Y-%m-%d')
+
+   
+    eventoExistente = Espaco.query.filter_by(data = data_obj , ambientes = form_espaco ).first()    
+    if eventoExistente:                       
+        return redirect(url_for('evento', error="A Data não está disponível!"))
+
+
     if not form_nome:      
       flash('O Nome é obrigatório!')
     else:       
@@ -279,7 +301,7 @@ def adicionarVisitante(id):
      
      eventoAtual = get_eventos(id)
      idEvento =  eventoAtual.id
-     form_nome = request.form['nome_convidado']
+     form_nome = request.form['nome_convidado'].lower()
      apartamento = eventoAtual.apartamento
      
     if not form_nome:      
@@ -311,23 +333,24 @@ def deleteConvidado(id):
 @app.route('/pesquisaNome' , methods=['GET','POST'])
 def pesquisaAcesso():    
     if request.method == 'POST':
-     form_nome = request.form['nome'].strip()
-     familiar = Familiar.query.filter_by(nome = form_nome ).all()        
-    if familiar:                
-        tipoDeAcesso = 'Familiar'
-        return render_template('pesquisa_acesso.html', pessoa = familiar , tipoDePessoa = tipoDeAcesso )              
-    else:
-        print('Não achou na familia')
+     form_nome = request.form['nome'].strip().lower()
+     morador = Usuario.query.filter_by(nome = form_nome).all()
+    if morador:
+            tipoDeAcesso = 'Morador'
+            return render_template('pesquisa_acesso.html', pessoa = morador , tipoDePessoa = tipoDeAcesso )
+    else:        
         convidado = ConvidadoEvento.query.filter_by(nome = form_nome).all()
     if convidado:        
         tipoDeAcesso = 'Convidado'
         convidadoEncontrado = ConvidadoEvento.query.filter_by(nome = form_nome).first()
         eventoEncontrado = Espaco.query.filter_by(id = convidadoEncontrado.id_agendamento).first()
-        
-        return render_template('pesquisa_acesso.html', pessoa = convidado , tipoDePessoa = tipoDeAcesso , evento = eventoEncontrado)              
-        
-    else:        
-        return render_template('pesquisa_acesso.html', nome=form_nome)
+        return render_template('pesquisa_acesso.html', pessoa = convidado , tipoDePessoa = tipoDeAcesso , evento = eventoEncontrado)                      
+    else:
+        familiar = Familiar.query.filter_by(nome = form_nome ).all()             
+    if familiar:                
+        tipoDeAcesso = 'Familiar'
+        return render_template('pesquisa_acesso.html', pessoa = familiar , tipoDePessoa = tipoDeAcesso )              
+    return render_template('pesquisa_acesso.html', nome=form_nome)
 
 if __name__ == '__main__':
     app.run(debug=True)

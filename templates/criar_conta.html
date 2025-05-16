@@ -117,6 +117,7 @@
     </head>
 
     <body>
+    <button onclick="window.location.href='/pinicial'">Voltar</button>  
     <div class="container-esquerdo">
         <!-- Lado Esquerdo -->
         <div class="esquerdo">
@@ -145,6 +146,9 @@
                     <div class="formulario">
                         <label for="cpf">CPF</label>
                         <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14">
+                        {% if error %}
+                        <div style="color: red;">{{ error }}</div>
+                        {% endif %}   
                     </div>
 
                     <div class="formulario">
@@ -165,15 +169,20 @@
                         </select>                        
                     </div>
                     
-                    <button type="submit" class="botao-entrar">Entrar</button>                          
+                    <button type="submit" class="botao-entrar">Entrar</button> 
+                                                      
                     </form>                       
                 </div>
             
         </div>
     </div>
-
       
-       
+    <script>
+    // Remove o estado do formulário do histórico
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+    </script>
         
 </body>
 </html>

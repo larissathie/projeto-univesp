@@ -84,6 +84,7 @@
 </head>
 
 <body>
+  <button onclick="window.location.href='/pinicial'">Voltar</button>
   <div class="container">
     <div class="lado-esquerdo">
       <form method="POST" action="/addFamiliar">
@@ -99,6 +100,9 @@
           <h3>Cpf do familiar</h3>
           <input type="text" name="cpf" placeholder="cpf visitante"
                 value="{{ familiar_editado.nome if familiar_editado else '' }}" required>
+                {% if error %}
+                <div style="color: red;">{{ error }}</div>
+                {% endif %} 
         </div>      
 
         {% if familiar_editado %}
@@ -117,7 +121,8 @@
           {% for familiar in familiares %}
             <li>
             <h3>Nome :{{ familiar.nome }} </h3> 
-            <h4>Cpf :{{ familiar.cpf_visitante }}</h4> 
+            <h4>Cpf :{{ familiar.cpf_visitante }}</h4>
+                          
             <h4>Apartamento:{{ familiar.apartamento }}</h4>
                   <form action="{{url_for('delete', cpf = familiar.cpf_visitante)}}" method="POST">
                     <input type="submit" value="Apagar" class="btn btn-danger btn-sn"
