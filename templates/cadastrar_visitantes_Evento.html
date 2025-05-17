@@ -14,6 +14,7 @@
       display: flex;
       padding: 30px;
       gap: 50px;
+      flex-wrap: wrap;
     }
 
     .formulario {
@@ -29,15 +30,7 @@
       margin-top: 0;
       color: #333;
     }
-
-    .formulario input[type="date"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 35px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-
+    
     .formulario button {
       padding: 10px 20px;
       border: none;
@@ -51,17 +44,9 @@
       background-color: #0056b3;
     }
 
-    
-    .espacamento-superior {
-      margin-top: 70px;
-    }
-
-    .campo-select {
-      width: 180px;        
-      height: 35px;
-      font-size: 16px;
-      padding: 5px 10px;
-      border-radius: 6px;
+    li form {
+      margin-top: 8px; /* Espaço entre o nome e o botão */
+      margin-bottom: 15px;
     }
 
     .lista-convidados {
@@ -72,10 +57,6 @@
       max-height: 90vh;
       overflow-y: auto;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-
-      display: flex;
-      flex-direction: column;
-      
     }
 
     .eventos-cadastrados {
@@ -85,10 +66,12 @@
     .eventos-cadastrados ul {
       list-style-type: disc;
       padding-left: 20px;
+      margin-bottom: 20px;
     }
 
     .eventos-cadastrados li {
-      margin-bottom: 10px;
+      margin-bottom: 20px;
+      
     }
 
     .lista-convidados h2 {
@@ -126,41 +109,88 @@
       background-color: #218838;
     }
 
+    .botao-voltar {
+      background-color: #007bff;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    .botao-voltar:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-excluir {
+      background-color: #dc3545;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: none;
+      margin-top: 4px;
+      cursor: pointer;
+    }
+
+    .btn-excluir:hover {
+      background-color: #a71d2a;
+    }
+
+    .perfil-info {
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      background-color: #ffffff;
+      margin: 20px 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+
   </style>
 </head>
-<body>
-  <button onclick="window.location.href='/cadastro_evento'">Voltar</button>
-  <div class="container">
-    <div class="formulario">
-        <h1>Sua Reserva : </h1>
-            <div class="perfil-info">
-              <p><strong><strong>Local:</strong> {{ evento.ambientes }}</p>
-              <p><strong>Data:</strong> {{ evento.data.strftime('%d/%m/%Y') }}
-              <p><strong>Ap:</strong> {{ evento.apartamento }}
-            </div>
 
-            <h2>Convidados cadastrados:</h2>
+  <body>
+    <div class="container">
+      <!-- Lado esquerdo: informações da reserva -->
+      <div class="formulario">
+
+        <a href="/cadastro_evento" class="botao-voltar">Voltar</a>
+
+        <h1>Sua Reserva:</h1>
+        <div class="perfil-info">
+          <p><strong>Local:</strong> {{ evento.ambientes }}</p>
+          <p><strong>Data:</strong> {{ evento.data.strftime('%d/%m/%Y') }}</p>
+          <p><strong>Ap:</strong> {{ evento.apartamento }}</p>
+        </div>
+
+        <h2>Convidados cadastrados:</h2>
         <ul>
           {% for convidado in convidados %}
-            <li>              
-              <strong>Nome:</strong> {{ convidado.nome }} 
-                     <form action="{{url_for('deleteConvidado', id = convidado['id_visitante'])}}" method="POST">
-                            <input type="submit" value="Excluir Convidado" class="btn btn-danger btn-sn"
-                            onclick="return confirm('Tem certeza que deseja excluir esse convidado?')"> 
-                            </form>
+            <li>
+              <strong>Nome:</strong> {{ convidado.nome }}
+              <form action="{{ url_for('deleteConvidado', id=convidado['id_visitante']) }}" method="POST">
+                <input type="submit" value="Excluir Convidado" class="btn-excluir"
+                onclick="return confirm('Tem certeza que deseja excluir esse convidado?')">
+              </form>
             </li>
           {% endfor %}
         </ul>
+      </div>
 
+      <!-- Lado direito: cadastro de convidado -->
+      <div class="cadastro-convidado">
+        <h2>Cadastrar Convidado:</h2>
+        <form method="POST" action="{{ url_for('adicionarVisitante', id=evento['id']) }}">
+          <input type="text" name="nome_convidado" placeholder="Nome do convidado" required>
+          <button type="submit">Adicionar</button>
+        </form>
+      </div>
     </div>
-                  <div class="cadastro-convidado">
-                    <h2>Cadastrar Convidado:</h2>
-                      <form method="POST" action="{{url_for('adicionarVisitante', id = evento['id'])}}">
-                        <input type="text" name="nome_convidado" placeholder="Nome do convidado" required>
-                        <button type="submit">Adicionar</button>
-                      </form>
-                  </div>
-  </div>
-
-</body>
-</html>
+  </body>
+</html> 

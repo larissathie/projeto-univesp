@@ -33,6 +33,31 @@
       margin-top: 0;
     }
 
+    .botao-voltar {
+      display: inline-block;
+      margin-bottom: 8px;
+      background-color: #007bff;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    
+    .botao-voltar:hover {
+      background-color: #0056b3;
+    }
+
+    .voltar-pagina {
+      margin-bottom: 10px;
+    }
+
+    .botao-voltar {
+      margin-top: 0; 
+      margin-left: 0; 
+    }
+
     form {
       display: flex;
       flex-direction: column;
@@ -84,9 +109,13 @@
 </head>
 
 <body>
-  <button onclick="window.location.href='/pinicial'">Voltar</button>
+  
   <div class="container">
     <div class="lado-esquerdo">
+      <div class="voltar-pagina">
+      <button onclick="window.location.href='/pinicial'" class="botao-voltar">Voltar</button>
+    </div>
+
       <form method="POST" action="/pesquisaNome">
         <h1>{{ 'Editar Familiar' if familiar_editado else 'Pesquisar nome' }}</h1>
 

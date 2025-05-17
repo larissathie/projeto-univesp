@@ -12,17 +12,42 @@
       background-color: #f2f2f2;
     }
 
+    .botao-voltar {
+      display: inline-block;
+      margin-bottom: 8px;
+      background-color: #007bff;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    
+    .botao-voltar:hover {
+      background-color: #0056b3;
+    }
+
+    .voltar-pagina {
+      margin-bottom: 10px;
+    }
+
+    .botao-voltar {
+      margin-top: 0; 
+      margin-left: 0; 
+    }
+
     .container {
       display: flex;
       min-height: 100vh;
-      padding: 30px;
+      padding: 25px;
       gap: 40px;
     }
 
     .lado-esquerdo, .lado-direito {
       flex: 1;
       background-color: #ffffff;
-      padding: 30px;
+      padding: 25px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       overflow-y: auto;
@@ -84,9 +109,14 @@
 </head>
 
 <body>
-  <button onclick="window.location.href='/pinicial'">Voltar</button>
+
   <div class="container">
     <div class="lado-esquerdo">
+
+      <div class="voltar-pagina">
+        <button onclick="window.location.href='/pinicial'" class="botao-voltar">Voltar</button>
+      </div>
+    
       <form method="POST" action="/addFamiliar">
         <h1>{{ 'Editar Familiar' if familiar_editado else 'Cadastrar Familiar' }}</h1>
 
@@ -120,20 +150,18 @@
         <ul>
           {% for familiar in familiares %}
             <li>
-            <h3>Nome :{{ familiar.nome }} </h3> 
-            <h4>Cpf :{{ familiar.cpf_visitante }}</h4>
-                          
-            <h4>Apartamento:{{ familiar.apartamento }}</h4>
+              <h3>Nome :{{ familiar.nome }} </h3> 
+              <h4>Cpf :{{ familiar.cpf_visitante }}</h4>              
+              <h4>Apartamento:{{ familiar.apartamento }}</h4>
                   <form action="{{url_for('delete', cpf = familiar.cpf_visitante)}}" method="POST">
                     <input type="submit" value="Apagar" class="btn btn-danger btn-sn"
                     onclick="return confirm('Tem certeza que deseja apagar esse familiar?')"> 
                   </form>
-                  </li>
+            </li>
           {% endfor %}
         </ul>
       {% endblock %}
     </div>
-
-  </div>
+  </div>  
 </body>
 </html>

@@ -15,6 +15,30 @@
           height: 100%;
           font-family: 'Arial', sans-serif;
         }
+
+        .botao-voltar {
+          display: inline-block;
+          margin-bottom: 8px;
+          background-color: #007bff;
+          color: white;
+          padding: 6px 12px;
+          border-radius: 4px;
+          text-decoration: none;
+          font-weight: bold;
+        }
+
+        .botao-voltar:hover {
+          background-color: #0056b3;
+        }
+
+        .voltar-pagina {
+          margin-bottom: 0;
+        }
+
+        .botao-voltar {
+          margin-top: 0; 
+          margin-left: 0; 
+        }
     
         .container-esquerdo {
           display: flex;
@@ -117,13 +141,16 @@
     </head>
 
     <body>
-    <button onclick="window.location.href='/pinicial'">Voltar</button>  
+      
     <div class="container-esquerdo">
+
+          <div class="voltar-pagina">
+            <button onclick="window.location.href='/pinicial'" class="botao-voltar">Voltar</button> 
+          </div> 
+
         <!-- Lado Esquerdo -->
         <div class="esquerdo">
             <h1>Criar nova conta</h1>
-            <p>Não possui uma conta? </p>
-            <p>Faça parte da plataforma do seu condomínio! Com uma conta, você terá acesso facilitado aos espaços do seu condomínio e poderá fazer reservas sem sair de casa. Criar uma conta garante mais segurança e praticidade no seu dia a dia. Tudo o que você precisa para se conectar com o seu condomínio está aqui.</p>
             <div class="imagem-cadastro"><img src="{{ url_for('static', filename='imagens/cadastro.png') }}" alt="Imagem de Cadastro"></div>
         </div>
     

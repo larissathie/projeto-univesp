@@ -10,10 +10,72 @@
       background-color: #f4f4f4;
     }
 
+    .botao-voltar {
+      display: inline-block;
+      margin-bottom: 8px;
+      background-color: #007bff;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .botao-voltar:hover {
+      background-color: #0056b3;
+    }
+
+    .voltar-pagina {
+      margin-bottom: 10px;
+    }
+
+    .botao-voltar {
+      margin-top: 0; 
+      margin-left: 0; 
+    }
+
     .container {
       display: flex;
       padding: 30px;
       gap: 50px;
+    }
+
+    .botoes-evento {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    .btn-convidados,
+    .btn-excluir {
+      padding: 8px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-block;
+      line-height: 1.5;
+      height: 38px; /* altura fixa para padronizar */
+    }
+
+    .btn-convidados {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .btn-convidados:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-excluir {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-excluir:hover {
+      background-color: #a71d2a;
     }
 
     .formulario {
@@ -72,10 +134,8 @@
       max-height: 90vh;
       overflow-y: auto;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-
       display: flex;
       flex-direction: column;
-      
     }
 
     .eventos-cadastrados {
@@ -129,12 +189,14 @@
   </style>
 </head>
 <body>
-  <button onclick="window.location.href='/pinicial'">Voltar</button>
+  <div class="container">    
+    <div class="formulario">
+        <div class="voltar-pagina">
+          <button onclick="window.location.href='/pinicial'" class="botao-voltar">Voltar</button>
+        </div>
       {% if error %}
       <div style="color: red;">{{ error }}</div>
-      {% endif %}
-  <div class="container">    
-    <div class="formulario">      
+      {% endif %}      
         <h1>Seu Perfil</h1>
             <div class="perfil-info">
               <p><strong>Nome:</strong> {{ nome }}</p>
@@ -150,14 +212,15 @@
               <strong>Local:</strong> {{ evento.ambientes }}
               <strong>Data:</strong> {{ evento.data.strftime('%d/%m/%Y') }}
               <strong>Ap:</strong> {{ evento.apartamento }}
-              <div>
-                    <a href="{{ url_for('cadastrar_visitantes_Evento', id = evento['id'])}}">
-                        <button>Convidados</button>
-                    </a>
-                            <form action="{{url_for('deleteEvento', id = evento['id'])}}" method="POST">
-                            <input type="submit" value="Excluir Evento" class="btn btn-danger btn-sn"
+              <div class="botoes-evento">
+                    <form action="{{ url_for('cadastrar_visitantes_Evento', id = evento['id']) }}" method="GET">
+                      <button type="submit" class="btn-convidados">Convidados</button>
+                    </form>
+
+                          <form action="{{url_for('deleteEvento', id = evento['id'])}}" method="POST">
+                            <input type="submit" value="Excluir Evento" class="btn-excluir"
                             onclick="return confirm('Tem certeza que deseja apagar esse evento?')"> 
-                            </form>
+                          </form>
               </div>
             </li>
           {% endfor %}

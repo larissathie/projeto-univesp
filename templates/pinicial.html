@@ -39,7 +39,7 @@
 
         .lado-direito {
           flex: 4; /* 30% */
-          background-color: white; /* só para destacar */
+          background-color: white; 
           padding: 10px;
           overflow-y: auto;
         }
@@ -47,15 +47,6 @@
         h1 {
           font-size: 1.8em;
           margin-bottom: 30px;
-        }
-
-        .container {
-          padding: 20px;
-          height: 100vh;
-          box-sizing: border-box;
-          display: flex;
-          align-items: center;
-          justify-content: center;
         }
 
         .espacos {
@@ -87,10 +78,14 @@
         }
 
         .perfil-info {
-          background-color: none;
-          padding: 30px;
-          border-radius: 15px;
+          border: 2px solid #ccc;
+          border-radius: 8px; 
+          padding: 20px;
           color: black;
+          width: 300px;               
+          margin-top: 20px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+          text-align: center;
         }
 
         .perfil-info p {
@@ -98,61 +93,94 @@
           margin-bottom: 10px;
         }
 
+        .top-bar {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          display: flex;
+          gap: 20px;
+          align-items: center;
+          z-index: 1000;
+        }
+
+        .btn-sair {
+          background-color: #007bff;
+          color: white;
+          padding: 8px 16px;
+          border-radius: 6px;
+          text-decoration: none;
+          font-weight: bold;
+          font-size: 14px;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-sair:hover {
+          background-color: #0056b3;
+        }
+
+        .admin-links a {
+          background-color: #ffffff;
+          padding: 8px 12px;
+          border-radius: 6px;
+          text-decoration: none;
+          font-weight: bold;
+          color: #333;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .admin-links a:hover {
+          background-color: #007bff;
+          color: white;
+        }
+
+
     </style>
 
   </head>
   <body>
 
     <div class="pagina-inicial">
-      <a href="/"><button>Sair</button></a>
       <div class="lado-esquerdo">
+        <div class="top-bar">
+          <a href="/" class="btn-sair">Sair</a>
+
+          {% if admin == 'sim' %}
+            <div class="admin-links">
+              <a href="criar_conta.html">Cadastrar Moradores</a>
+              <a href="pesquisa_acesso.html">Pesquisar acesso</a>
+            </div>
+          {% endif %}
+        </div>
       
-        {% if admin == 'sim' %}
-            <h1>SOU ADMINISTRADOR</h1>
-              <!-- Links que só aparecem para admin -->
-               <div class="espacos">
-                  <a href="criar_conta.html">Cadastrar Moradores
-                    <div class="espacos-img">              
-                      <img src="{{ url_for('static', filename='imagens/familia.png') }}" alt="Imagem de família">
-                    </div>
-                  </a> 
+                <!-- Links que só aparecem para admin -->
 
-                  <a href="pesquisa_acesso.html">Pesquisar acesso
-                    <div class="espacos-img">              
-                      <img src="{{ url_for('static', filename='imagens/familia.png') }}" alt="Imagem de família">
-                    </div>
-                  </a> 
-                 
+          <h1>Locais</h1>
+          <div class="espacos">
+            <a href="{{ url_for('evento') }}"> 
+              <div class="espacos-img">              
+                <img src="{{ url_for('static', filename='imagens/espacos.png') }}" alt="Imagem dos espaços">
               </div>
-        {% endif %}
-
-
-
-
-        <h1>Locais</h1>
-        <div class="espacos">
-          <a href="{{ url_for('evento') }}"> 
-            <div class="espacos-img">              
-              <img src="{{ url_for('static', filename='imagens/espacos.png') }}" alt="Imagem dos espaços">
-            </div>
-          </a>        
-          <a href="{{ url_for('cadastrar_familiares') }}">
-            <div class="espacos-img">              
-              <img src="{{ url_for('static', filename='imagens/familia.png') }}" alt="Imagem de família">
-            </div>
-          </a>
-      </div>
-    </div>
-    <div class="lado-direito">
-      <h1>Seu Perfil</h1>
-      <div class="perfil-info">
-          <p><strong>Nome:</strong> {{ nome }}</p>
-          <p><strong>Cpf:</strong> {{ cpf }}</p>
-          <p><strong>Apartamento:</strong> {{ apartamento }}</p>   
-          <p><strong>administrador:</strong> {{ admin }}</p>                 
+            </a>        
+            <a href="{{ url_for('cadastrar_familiares') }}">
+              <div class="espacos-img">              
+                <img src="{{ url_for('static', filename='imagens/familia.png') }}" alt="Imagem de família">
+              </div>
+            </a>
         </div>
       </div>
-    </div>
+      <div class="lado-direito">
+
+        <div class="perfil-info">
+          <h1>Seu Perfil</h1>
+            <p><strong>Nome:</strong> {{ nome }}</p>
+            <p><strong>Cpf:</strong> {{ cpf }}</p>
+            <p><strong>Apartamento:</strong> {{ apartamento }}</p>   
+            <p><strong>administrador:</strong> {{ admin }}</p>                 
+          </div>
+        </div>
+      </div>
 
   </body>
   </html>
